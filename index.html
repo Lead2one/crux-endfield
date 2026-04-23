@@ -27,61 +27,82 @@
             pointer-events: none; z-index: -2;
         }
 
-        .page { width: min(100%, 980px); margin: 3rem auto; padding: 0; }
+        .page { width: 100%; margin: 0; padding: 0; position: relative; }
 
-        .crux-logo { text-align: center; margin-bottom: 1rem; }
+        /* --- 修改点：重新整理合并后的 Logo 样式 --- */
+        .crux-logo-group { 
+            text-align: center; display:flex; flex-direction:column; align-items:center; gap:8px;
+            position: relative; margin-bottom: 10rem;
+            pointer-events: auto;
+        }
+        .logo-title-wrap {
+            display: flex; align-items: center; justify-content: center;
+        }
+        .crux-word {
+            font-family: "PingFang SC", 'Times New Roman', serif;
+            font-weight: 600;
+            font-size: clamp(30px, 8vw, 90px);
+            letter-spacing: 0.18em;
+            color: transparent;
+            background: linear-gradient(90deg,#fff1ff,#ffd9fb 40%, #a86bff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-stroke: 0.8px rgba(0,0,0,0.14);
+            text-shadow: 0 10px 36px rgba(168,107,255,0.22);
+            display: inline-block; line-height:1;
+        }
+        .crux-mark {
+            color:#ffd9fb;
+            font-size: clamp(20px, 4vw, 44px);
+            margin: 0 8px;
+            opacity:0.95;
+            transform: translateY(6px);
+            text-shadow: 0 6px 20px rgba(168,107,255,0.08);
+        }
+        .subtitle { display:block; margin-top:0.2rem; font-size:0.95rem; color:#cdb9ff; opacity:0.9; letter-spacing:0.12em }
 
-        header.crux-logo { font-size: clamp(2.4rem, 6vw, 4.2rem); color: #d7b9ff; letter-spacing: 0.7rem; }
-        .subtitle { display:block; margin-top:0.4rem; font-size:0.95rem; color:#cdb9ff; opacity:0.9; letter-spacing:0.12em }
+        /* 艺术化 Logo（SVG）保留以防后续使用 */
+        .logo-svg { width: clamp(220px, 36vw, 420px); height: auto; display: block }
+        .logo-text { font-family: Georgia, 'Times New Roman', serif; font-weight: 800; font-size: 100px; letter-spacing: 0.14em; fill: url(#lg); stroke: rgba(255,255,255,0.06); stroke-width: 1px; paint-order: stroke; filter: url(#glow) }
+        .logo-accent { fill: rgba(255,255,255,0.06) }
 
         .hero {
-            min-height: 78vh;
-            display: flex; align-items: center; justify-content: center; flex-direction: column;
-            padding: 2.4rem; border-radius: 24px;
-            background: linear-gradient(180deg, rgba(21,12,42,0.86), rgba(12,8,22,0.6));
-            border: 1px solid rgba(157,78,221,0.12);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.48);
-            position: relative; overflow: hidden; cursor: pointer;
+            width: 100vw; margin-left: calc(50% - 50vw);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;
+            padding: 3.2rem 2.4rem; border-radius: 0;
+            background: 
+                radial-gradient(ellipse 900px 700px at center top, rgba(220,160,255,0.45) 0%, rgba(190,130,255,0.22) 25%, rgba(140,80,220,0.08) 50%, transparent 70%),
+                linear-gradient(180deg, rgba(21,12,42,0.92), rgba(6,4,12,0.75));
+            border: none; box-shadow: none;
+            position: relative; overflow: hidden; z-index: 0;
         }
 
-        .hero-inner { max-width: 880px; text-align: center; }
+        /* 修改点：调整 marginTop，因为移入了高大的 Logo，防止向上溢出 */
+        .hero-inner { max-width: 880px; text-align: center;margin-bottom: 20%; }
         .hero h2 { color: #f6c0ff; font-size: clamp(1.6rem, 4.8vw, 2.6rem); line-height:1.2; margin-bottom: 0.25rem; font-weight:700; letter-spacing:0.02em }
 
         /* 装饰性副标题与分割线 */
-        .hero-deco { margin-top: 12px; height:18px; display:flex; align-items:center; justify-content:center; gap:14px }
+        .hero-deco {  height:18px; display:flex; align-items:center; justify-content:center; gap:14px }
         .hero-deco::before, .hero-deco::after { content:""; display:block; width:64px; height:1px; background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(157,78,221,0.16)); border-radius:2px }
         .hero-deco span { color:#ffd8fb; font-size:0.85rem; opacity:0.95; letter-spacing:0.18em }
 
         .hero-sub { margin-top: 6px; font-size: 0.98rem; color: transparent; background: linear-gradient(90deg,#ffd9fb,#d7b9ff); -webkit-background-clip: text; background-clip: text; opacity:0.98; font-style: italic; text-shadow: 0 6px 24px rgba(167,107,255,0.06); }
-
         .hero p { color:#d7d0ff; opacity:0.95; font-size:1rem; line-height:1.8 }
-
-        .theme-banner {
-            position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
-            background: rgba(255,255,255,0.04); color:#ffe6ff; padding:8px 14px; border-radius:999px;
-            border:1px solid rgba(255,255,255,0.06); backdrop-filter: blur(6px);
-            opacity:0; transform-origin:center; transition: all 360ms ease;
-        }
-
-        .theme-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         .scroll-hint {
             position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-            display:flex; align-items:center; gap:10px; color:#ffd8fb; font-weight:600; opacity:0; transition: all 300ms ease;
+            display:flex; flex-direction: column; align-items:center; gap:8px; color:#ffd8fb; font-weight:600; opacity:0; transition: all 300ms ease; text-align:center;
         }
-
         .scroll-hint.show { opacity:1; transform: translateX(-50%) translateY(0); }
 
         .arrow {
             width: 18px; height: 18px; border-left:2px solid #ffd8fb; border-bottom:2px solid #ffd8fb; transform: rotate(-45deg);
             animation: bounce 1.4s infinite;
         }
-
         @keyframes bounce { 0%{ transform:translateY(0) rotate(-45deg)} 50%{ transform:translateY(8px) rotate(-45deg)} 100%{transform:translateY(0) rotate(-45deg)} }
 
-        .content { display:block; gap:1.4rem; margin-top: 2rem }
-
-        .section-more { display: grid; gap: 1.2rem; padding: 1.6rem 0 0 0 }
+        .content { display:block; gap:1.4rem; margin-top: 0; padding-top: 3rem; }
+        .section-more { display: grid; gap: 1.2rem; padding: 1.6rem 0 0 0; width: min(100%, 980px); margin: 0 auto; }
 
         .intro.glass-card { padding:2rem; border-radius:20px; background: linear-gradient(180deg, rgba(18,12,34,0.78), rgba(12,8,22,0.5)); }
         .intro h3 { color:#ffe6ff; margin-bottom:0.4rem; font-size:1.25rem }
@@ -92,35 +113,111 @@
         .feature:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(72,40,120,0.36) }
         .feature h4 { color:#ffd9fb; margin-bottom:0.4rem; font-size:1.05rem }
         .feature p { color:#e8e4ff; opacity:0.95; font-size:0.95rem; line-height:1.6 }
-
         .meta { margin-top:0.8rem; font-size:0.82rem; color:#cdb9ff; opacity:0.9 }
 
         .cta { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:1rem 1.2rem; border-radius:14px; margin-top:0.8rem; }
         .cta .btn { background: linear-gradient(90deg,#a86bff,#ff79c6); color:#0b0310; padding:10px 16px; border-radius:999px; font-weight:700; box-shadow:0 8px 30px rgba(167,107,255,0.18); border:none; cursor:pointer }
 
-        .glass-card { padding:1.6rem 1.8rem; border-radius:22px; background:linear-gradient(180deg, rgba(17,10,32,0.72), rgba(12,8,22,0.6)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 16px 40px rgba(0,0,0,0.28); backdrop-filter: blur(12px); }
+        .glass-card { padding:1.6rem 1.8rem; border-radius:22px; background:linear-gradient(180deg, rgba(17,10,32,0.72), rgba(12,8,22,0.6)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 16px 40px rgba(0,0,0,0.28); backdrop-filter: blur(12px); margin-left: auto; margin-right: auto; }
 
         .more { opacity:0; transform: translateY(24px); transition: all 520ms cubic-bezier(.2,.9,.2,1); }
         .more.visible { opacity:1; transform: translateY(0); }
 
-        .footer { text-align:center; color:#b89dff; margin:2.6rem 0 4rem; opacity:0.9 }
+        /* Hero 视差层与星尘 */
+        .hero { perspective: 1000px }
+        .hero-layer { position:absolute; inset:0; pointer-events:none; transform: translateZ(0); transition: transform 400ms ease; }
+        .hero-layer.stars { background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.14) 1px, transparent 1px), radial-gradient(circle at 70% 40%, rgba(173,84,255,0.12) 1px, transparent 1px); background-size: 60px 60px, 90px 90px; opacity:0.14 }
+        .hero-layer.clouds { background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 30%); opacity:0.06 }
 
-        @media (max-width:640px){ .hero{ padding:1.6rem; min-height:70vh } header.crux-logo{ letter-spacing:0.36rem } }
+        .particles { position:absolute; inset:0; pointer-events:none; z-index:0 }
+        .particle {
+            position:absolute; width:6px; height:6px; border-radius:50%;
+            background: radial-gradient(circle at 30% 30%, #fff7ff 0%, #ffd9fb 30%, #a86bff 100%);
+            opacity:0.95; transform: translate3d(0,0,0); will-change: transform, opacity;
+            box-shadow: 0 0 8px rgba(168,107,255,0.45), 0 0 18px rgba(255,121,198,0.12);
+            filter: drop-shadow(0 0 6px rgba(168,107,255,0.12));
+        }
+
+        @keyframes floatAnim {
+            0% { transform: translate3d(0, 0, 0); opacity: 0.9 }
+            50% { transform: translate3d(12px, -10px, 0); opacity: 0.6 }
+            100% { transform: translate3d(0, 8px, 0); opacity: 0.95 }
+        }
+        .particle.animate { animation-name: floatAnim; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate; }
+
+        .feature { transform-style: preserve-3d; will-change: transform }
+        @media (hover: none) {
+            .hero-layer, .particle { display: none }
+            .feature { transform: none !important }
+        }
+
+        /* Accordion 样式 */
+        .accordion { padding: 0.2rem; }
+        .accordion-toggle {
+            width: 100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+            background: transparent; border: none; padding: 14px 18px; border-radius:12px; cursor:pointer;
+            font-weight:700; color:#f8b0ff; font-size:1.02rem;
+        }
+        .accordion-toggle:focus { outline: 3px solid rgba(157,78,221,0.18); outline-offset:4px }
+        .accordion-icon { transition: transform 320ms ease; color:#ffd8fb }
+        .accordion-panel { overflow: hidden; max-height: 0; transition: max-height 420ms cubic-bezier(.2,.9,.2,1); }
+        .accordion-panel.open { max-height: 400px; }
+
+        .footer { text-align:center; color:#b89dff; margin:2.6rem auto 4rem; opacity:0.9; width: min(100%, 980px); }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .cards { grid-template-columns: repeat(2, 1fr); gap: 14px }
+            .hero { min-height: 100vh; padding: 3rem 2rem }
+            .logo-svg { width: 60vw }
+            .hero h2 { font-size: clamp(1.4rem, 3.8vw, 2.2rem) }
+            .hero-sub { font-size: 0.95rem }
+            .intro.glass-card { padding:1.6rem }
+        }
+
+        @media (max-width: 520px) {
+            .cards { grid-template-columns: 1fr; gap: 12px }
+            .hero { min-height: 100vh; padding: 2rem 1.6rem; border-radius: 0 }
+            .logo-svg { width: 80vw }
+            .crux-logo-group { letter-spacing: 0.26rem }
+            .hero h2 { font-size: 1.25rem; line-height: 1.4 }
+            .hero-deco::before, .hero-deco::after { width: 36px }
+            .hero-deco span { font-size: 0.78rem }
+            .hero-sub { font-size: 0.88rem }
+            .intro.glass-card { padding:1.2rem }
+            .feature { padding: 14px }
+            .cta { flex-direction: column; align-items: stretch; gap: 10px }
+            .cta .btn { width: 100%; padding: 12px 18px; font-size: 1rem }
+            .accordion-toggle { padding: 18px 14px; font-size: 1.03rem }
+            .accordion-panel.open { max-height: 1000px }
+            .scroll-hint { bottom: 18px }
+        }
     </style>
 </head>
 <body>
     <main class="page">
-        <header class="crux-logo">✦ CRUX ✦<span class="subtitle">南十字·终末星界秘所</span></header>
 
         <section class="hero" id="hero" aria-label="主题区">
-            <div class="theme-banner" id="themeBanner">主题：暗紫 · 星域</div>
             <div class="hero-inner">
+                
+                <!-- 修改点：将原版独立的 header 元素挪动到了此处，并更名为 crux-logo-group -->
+                <div class="crux-logo-group">
+                    <div class="logo-title-wrap">
+                        <span class="crux-mark">✦</span>
+                        <span class="crux-word">南十字座</span>
+                        <span class="crux-mark">✦</span>
+                    </div>
+                    <span class="subtitle">·终末星界秘所·</span>
+                </div>
+                
                 <h2>终末之世，天灾与深渊并行，畸变与诅咒笼罩大地。</h2>
+                <div class="hero-deco" aria-hidden="true"><span>扭曲 · 天灾 · 星域</span></div>
+                <div class="hero-sub">余烬在星轨间低语，秘所于暗影中守望</div>
             </div>
 
             <div class="scroll-hint" id="scrollHint" aria-hidden="true">
-                <div class="arrow"></div>
                 <div class="hint-text">向下滑动以揭示更多内容与秘典。</div>
+                <div class="arrow" aria-hidden="true"></div>
             </div>
         </section>
 
@@ -162,10 +259,17 @@
                 </div>
             </section>
 
-            <details class="glass-card">
-                <summary>点击查看深渊箴言</summary>
-                <div class="spoiler-content">当你凝视深渊的时候，深渊也在凝视着你。</div>
-            </details>
+            <div class="accordion glass-card" id="abyssAccordion">
+                <button class="accordion-toggle" id="abyssToggle" aria-expanded="false" aria-controls="abyssPanel">
+                    <span class="accordion-title">点击查看深渊箴言</span>
+                    <svg class="accordion-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div id="abyssPanel" class="accordion-panel" hidden>
+                    <div class="spoiler-content">当你凝视深渊的时候，深渊也在凝视着你。</div>
+                </div>
+            </div>
         </div>
 
         <div class="footer">终末星界秘所 · 以南十字为锚，向终末宣战</div>
@@ -174,13 +278,12 @@
     <script>
         (function(){
             const hero = document.getElementById('hero');
-            const banner = document.getElementById('themeBanner');
             const hint = document.getElementById('scrollHint');
             const more = document.getElementById('more');
             const content = document.querySelector('.content');
             let activated = false;
             let animating = false;
-            let locked = true; // 锁定原生滚动，直到我们触发一次整页跳转
+            let locked = true; 
             let wheelAcc = 0;
             let wheelTimer = null;
             let touchStartY = 0;
@@ -188,25 +291,18 @@
             function activateTheme(){
                 if(activated) return;
                 activated = true;
-                banner.classList.add('show');
                 hint.classList.add('show');
                 hint.setAttribute('aria-hidden','false');
             }
 
-            // 页面加载立即激活主题效果
-            window.addEventListener('DOMContentLoaded', function(){
-                activateTheme();
-            });
+            window.addEventListener('DOMContentLoaded', function(){ activateTheme(); });
 
-            // 整页滚动到下一个区域
             function goToNext(){
                 if(animating) return;
                 animating = true;
-                // 平滑滚动到内容区顶部
                 content.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 hint.classList.remove('show');
                 more.classList.add('visible');
-                // 解锁原生滚动，允许后续正常滚动
                 setTimeout(()=>{ animating = false; locked = false; }, 700);
             }
 
@@ -217,9 +313,8 @@
                 setTimeout(()=>{ animating = false; locked = true; }, 700);
             }
 
-            // 鼠标滚轮阈值检测（passive: false 以便 preventDefault）
             function onWheel(e){
-                if(!locked) return; // 若已解锁则恢复原生滚动
+                if(!locked) return; 
                 e.preventDefault();
                 wheelAcc += e.deltaY;
                 clearTimeout(wheelTimer);
@@ -232,7 +327,6 @@
 
             hero.addEventListener('wheel', onWheel, { passive: false });
 
-            // 触摸滑动支持（移动端）
             hero.addEventListener('touchstart', function(e){ touchStartY = e.touches[0].clientY; }, { passive: true });
             hero.addEventListener('touchmove', function(e){
                 if(!locked) return;
@@ -242,7 +336,6 @@
                 }
             }, { passive: true });
 
-            // 提示点击或按键也能触发（为辅助设备）
             hero.setAttribute('tabindex', '0');
             hero.addEventListener('keydown', function(e){
                 if(e.key === 'ArrowDown' || e.key === 'PageDown'){
@@ -252,13 +345,93 @@
                 }
             });
 
-            // 当用户通过程序滚动或手动滚动到内容区时，确保 reveal 动画触发
             window.addEventListener('scroll', function(){
                 if(window.scrollY > 80 || document.documentElement.scrollTop > 80){
                     more.classList.add('visible');
                     hint.classList.remove('show');
                 }
             }, { passive: true });
+
+            const abyssToggle = document.getElementById('abyssToggle');
+            const abyssPanel = document.getElementById('abyssPanel');
+            const abyssIcon = abyssToggle && abyssToggle.querySelector('.accordion-icon');
+
+            function openAbyss(){
+                abyssToggle.setAttribute('aria-expanded', 'true');
+                abyssPanel.hidden = false;
+                requestAnimationFrame(()=>{
+                    abyssPanel.classList.add('open');
+                    abyssPanel.style.maxHeight = abyssPanel.scrollHeight + 'px';
+                });
+                if(abyssIcon) abyssIcon.style.transform = 'rotate(180deg)';
+                setTimeout(()=>{ const first = abyssPanel.querySelector('button, a, input, [tabindex]'); if(first) first.focus(); }, 420);
+            }
+
+            function closeAbyss(){
+                abyssToggle.setAttribute('aria-expanded', 'false');
+                abyssPanel.classList.remove('open');
+                abyssPanel.style.maxHeight = abyssPanel.scrollHeight + 'px';
+                requestAnimationFrame(()=> abyssPanel.style.maxHeight = '0px');
+                if(abyssIcon) abyssIcon.style.transform = 'rotate(0deg)';
+                setTimeout(()=> abyssPanel.hidden = true, 420);
+            }
+
+            if(abyssToggle){
+                abyssToggle.addEventListener('click', function(){
+                    const expanded = abyssToggle.getAttribute('aria-expanded') === 'true';
+                    if(expanded) closeAbyss(); else openAbyss();
+                });
+
+                abyssToggle.addEventListener('keydown', function(e){
+                    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abyssToggle.click(); }
+                    if(e.key === 'Escape') { closeAbyss(); }
+                });
+            }
+
+            const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+            if(!isTouch){
+                const starsLayer = document.createElement('div'); starsLayer.className = 'hero-layer stars';
+                const cloudsLayer = document.createElement('div'); cloudsLayer.className = 'hero-layer clouds';
+                const particlesWrap = document.createElement('div'); particlesWrap.className = 'particles';
+                document.getElementById('hero').appendChild(starsLayer);
+                document.getElementById('hero').appendChild(cloudsLayer);
+                document.getElementById('hero').appendChild(particlesWrap);
+
+                document.getElementById('hero').addEventListener('mousemove', function(e){
+                    const rect = this.getBoundingClientRect();
+                    const cx = (e.clientX - rect.left) / rect.width - 0.5; 
+                    const cy = (e.clientY - rect.top) / rect.height - 0.5;
+                    starsLayer.style.transform = `translate3d(${ -cx * 20 }px, ${ -cy * 12 }px, 0)`;
+                    cloudsLayer.style.transform = `translate3d(${ -cx * 8 }px, ${ -cy * 6 }px, 0)`;
+                });
+
+                const particleCount = 14;
+                for(let i=0;i<particleCount;i++){
+                    const p = document.createElement('div'); p.className='particle';
+                    p.style.left = Math.random()*100 + '%';
+                    p.style.top = Math.random()*80 + '%';
+                    const s = 4 + Math.random()*10; p.style.width = s+'px'; p.style.height = s+'px';
+                    particlesWrap.appendChild(p);
+                    const dur = 8000 + Math.random()*10000; 
+                    const delay = Math.random()*3000; 
+                    p.style.animationDuration = dur + 'ms';
+                    p.style.animationDelay = delay + 'ms';
+                    p.style.opacity = 0.85 + Math.random()*0.15;
+                    p.classList.add('animate');
+                }
+
+                const features = document.querySelectorAll('.feature');
+                features.forEach(fn=>{
+                    fn.addEventListener('pointermove', function(e){
+                        const r = this.getBoundingClientRect();
+                        const px = (e.clientX - r.left) / r.width - 0.5; 
+                        const py = (e.clientY - r.top) / r.height - 0.5;
+                        const rx = (py)*8; const ry = (px)*-10;
+                        this.style.transform = `translateZ(6px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+                    });
+                    fn.addEventListener('pointerleave', function(){ this.style.transform = ''; });
+                });
+            }
 
         })();
     </script>
