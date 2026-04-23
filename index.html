@@ -8,9 +8,16 @@
     <link rel="apple-touch-icon" href="南十字Crux.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; }
+        
+        /* 隐藏原生鼠标 (仅非触屏设备生效)，为高级指针让路 */
+        @media (pointer: fine) {
+            * { cursor: none !important; }
+        }
+
+        html, body { height: 100%; overscroll-behavior: none; /* 禁用系统级边缘回弹，保证翻页严谨 */ }
+        
         body {
-            background: radial-gradient(circle at top, #2b1b3b 0%, #09070d 40%, #040307 100%);
+            background: #040307;
             color: #e6e2ff;
             font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -19,111 +26,242 @@
         }
 
         body::before {
-            content: "";
-            position: fixed; inset: 0;
+            content: ""; position: fixed; inset: 0;
             background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.06), transparent 18%),
                         radial-gradient(circle at 85% 15%, rgba(173,84,255,0.08), transparent 14%),
                         linear-gradient(160deg, rgba(86,50,162,0.1), transparent 45%, rgba(3,2,8,0.7));
             pointer-events: none; z-index: -2;
         }
 
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #040307; border-left: 1px solid rgba(168, 107, 255, 0.05); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #5c358f 0%, #9d4edd 100%); border-radius: 8px; border: 2px solid #040307; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #a86bff 0%, #ff79c6 100%); }
+
         .page { width: 100%; margin: 0; padding: 0; position: relative; }
 
-        /* --- 修改点：重新整理合并后的 Logo 样式 --- */
         .crux-logo-group { 
             text-align: center; display:flex; flex-direction:column; align-items:center; gap:8px;
-            position: relative; margin-bottom: 10rem;
-            pointer-events: auto;
+            position: relative; margin-bottom: clamp(2rem, 8vh, 6rem); pointer-events: auto;
         }
-        .logo-title-wrap {
-            display: flex; align-items: center; justify-content: center;
-        }
+        .logo-title-wrap { display: flex; align-items: center; justify-content: center; }
         .crux-word {
             font-family: "PingFang SC", 'Times New Roman', serif;
-            font-weight: 600;
-            font-size: clamp(30px, 8vw, 90px);
-            letter-spacing: 0.18em;
-            color: transparent;
-            background: linear-gradient(90deg,#fff1ff,#ffd9fb 40%, #a86bff 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
+            font-weight: 600; font-size: clamp(30px, 8vw, 90px); letter-spacing: 0.18em;
+            color: transparent; background: linear-gradient(90deg,#fff1ff,#ffd9fb 40%, #a86bff 100%);
+            -webkit-background-clip: text; background-clip: text;
             -webkit-text-stroke: 0.8px rgba(0,0,0,0.14);
             text-shadow: 0 10px 36px rgba(168,107,255,0.22);
             display: inline-block; line-height:1;
         }
         .crux-mark {
-            color:#ffd9fb;
-            font-size: clamp(20px, 4vw, 44px);
-            margin: 0 8px;
-            opacity:0.95;
-            transform: translateY(6px);
-            text-shadow: 0 6px 20px rgba(168,107,255,0.08);
+            color:#ffd9fb; font-size: clamp(20px, 4vw, 44px); margin: 0 8px;
+            opacity:0.95; transform: translateY(6px); text-shadow: 0 6px 20px rgba(168,107,255,0.08);
         }
         .subtitle { display:block; margin-top:0.2rem; font-size:0.95rem; color:#cdb9ff; opacity:0.9; letter-spacing:0.12em }
 
-        /* 艺术化 Logo（SVG）保留以防后续使用 */
-        .logo-svg { width: clamp(220px, 36vw, 420px); height: auto; display: block }
-        .logo-text { font-family: Georgia, 'Times New Roman', serif; font-weight: 800; font-size: 100px; letter-spacing: 0.14em; fill: url(#lg); stroke: rgba(255,255,255,0.06); stroke-width: 1px; paint-order: stroke; filter: url(#glow) }
-        .logo-accent { fill: rgba(255,255,255,0.06) }
-
         .hero {
             width: 100vw; margin-left: calc(50% - 50vw);
-            min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;
+            min-height: 100vh; min-height: 100dvh; 
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
             padding: 3.2rem 2.4rem; border-radius: 0;
             background: 
                 radial-gradient(ellipse 900px 700px at center top, rgba(220,160,255,0.45) 0%, rgba(190,130,255,0.22) 25%, rgba(140,80,220,0.08) 50%, transparent 70%),
-                linear-gradient(180deg, rgba(21,12,42,0.92), rgba(6,4,12,0.75));
-            border: none; box-shadow: none;
-            position: relative; overflow: hidden; z-index: 0;
+                linear-gradient(180deg, rgba(21,12,42,0.92) 0%, rgba(10,6,18,0.85) 60%, #07040e 100%);
+            border: none; box-shadow: none; position: relative; overflow: hidden; z-index: 0;
         }
 
-        /* 修改点：调整 marginTop，因为移入了高大的 Logo，防止向上溢出 */
-        .hero-inner { max-width: 880px; text-align: center;margin-bottom: 20%; }
+        .hero-inner { max-width: 880px; text-align: center; margin-bottom: 4vh; margin-top: -5vh; }
         .hero h2 { color: #f6c0ff; font-size: clamp(1.6rem, 4.8vw, 2.6rem); line-height:1.2; margin-bottom: 0.25rem; font-weight:700; letter-spacing:0.02em }
 
-        /* 装饰性副标题与分割线 */
-        .hero-deco {  height:18px; display:flex; align-items:center; justify-content:center; gap:14px }
+        .hero-deco { height:18px; display:flex; align-items:center; justify-content:center; gap:14px }
         .hero-deco::before, .hero-deco::after { content:""; display:block; width:64px; height:1px; background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(157,78,221,0.16)); border-radius:2px }
         .hero-deco span { color:#ffd8fb; font-size:0.85rem; opacity:0.95; letter-spacing:0.18em }
-
         .hero-sub { margin-top: 6px; font-size: 0.98rem; color: transparent; background: linear-gradient(90deg,#ffd9fb,#d7b9ff); -webkit-background-clip: text; background-clip: text; opacity:0.98; font-style: italic; text-shadow: 0 6px 24px rgba(167,107,255,0.06); }
-        .hero p { color:#d7d0ff; opacity:0.95; font-size:1rem; line-height:1.8 }
-
+        
         .scroll-hint {
-            position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-            display:flex; flex-direction: column; align-items:center; gap:8px; color:#ffd8fb; font-weight:600; opacity:0; transition: all 300ms ease; text-align:center;
+            position: absolute; bottom: max(4vh, 24px); left: 50%; transform: translateX(-50%);
+            display:flex; flex-direction: column; align-items:center; gap:8px; color:#ffd8fb; font-weight:600; opacity:0; transition: all 400ms ease; text-align:center;
         }
         .scroll-hint.show { opacity:1; transform: translateX(-50%) translateY(0); }
-
         .arrow {
             width: 18px; height: 18px; border-left:2px solid #ffd8fb; border-bottom:2px solid #ffd8fb; transform: rotate(-45deg);
             animation: bounce 1.4s infinite;
         }
         @keyframes bounce { 0%{ transform:translateY(0) rotate(-45deg)} 50%{ transform:translateY(8px) rotate(-45deg)} 100%{transform:translateY(0) rotate(-45deg)} }
 
-        .content { display:block; gap:1.4rem; margin-top: 0; padding-top: 3rem; }
-        .section-more { display: grid; gap: 1.2rem; padding: 1.6rem 0 0 0; width: min(100%, 980px); margin: 0 auto; }
+        .content { 
+            display: block; width: 100%; padding-top: 3rem; 
+            /* 【修改点 2】底部加入 10vh 留白，防止 Footer 贴底 */
+            padding-bottom: 10vh;
+            background: linear-gradient(180deg, #07040e 0%, #040307 15%, #040307 100%);
+        }
+        
+        /* 【修改点 1】高级空间折叠与挤压动效 */
+        .section-more { 
+            display: grid; gap: 1.6rem; padding: 1.6rem 0 0 0; width: min(100%, 1020px); margin: 0 auto; 
+            transform-origin: top center;
+            transition: transform 420ms cubic-bezier(.2,.9,.2,1), 
+                        margin-bottom 420ms cubic-bezier(.2,.9,.2,1), 
+                        filter 420ms ease, opacity 420ms ease;
+        }
+        /* 触发挤压时的样式：缩小、上移、模糊并压缩物理高度 */
+        .content.squeezed .section-more {
+            transform: scale(0.93) translateY(-1%);
+            margin-bottom: -40px;
+            filter: blur(3px) brightness(0.6);
+            opacity: 0.85;
+        }
 
-        .intro.glass-card { padding:2rem; border-radius:20px; background: linear-gradient(180deg, rgba(18,12,34,0.78), rgba(12,8,22,0.5)); }
-        .intro h3 { color:#ffe6ff; margin-bottom:0.4rem; font-size:1.25rem }
-        .intro p { color:#e7e3ff; opacity:0.92; line-height:1.7 }
+        .glass-card { 
+            padding: 2.2rem 2.4rem; border-radius: 24px; 
+            background: linear-gradient(145deg, rgba(22,14,42,0.6), rgba(10,6,20,0.8)); 
+            border: 1px solid rgba(168,107,255,0.15); 
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            margin-left: auto; margin-right: auto; width: min(100%, 1020px);
+        }
 
-        .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-top:0.6rem }
-        .feature { padding:1.2rem; border-radius:14px; background: linear-gradient(180deg, rgba(24,14,46,0.68), rgba(12,8,22,0.48)); border:1px solid rgba(157,78,221,0.08); box-shadow: 0 10px 30px rgba(10,6,20,0.45); transition: transform .32s ease, box-shadow .32s ease }
-        .feature:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(72,40,120,0.36) }
-        .feature h4 { color:#ffd9fb; margin-bottom:0.4rem; font-size:1.05rem }
-        .feature p { color:#e8e4ff; opacity:0.95; font-size:0.95rem; line-height:1.6 }
-        .meta { margin-top:0.8rem; font-size:0.82rem; color:#cdb9ff; opacity:0.9 }
+        .intro { position: relative; overflow: hidden; }
+        .intro::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #a86bff, #ff79c6, transparent);
+        }
+        .intro h3 { display: flex; align-items: center; gap: 10px; color:#ffe6ff; margin-bottom:0.8rem; font-size:1.4rem; letter-spacing:0.05em; }
+        .intro h3::before { content: "✦"; color: #ff79c6; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,121,198,0.8); }
+        .intro p { color:#e7e3ff; opacity:0.92; line-height:1.8; font-size: 1.05rem; }
 
-        .cta { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:1rem 1.2rem; border-radius:14px; margin-top:0.8rem; }
-        .cta .btn { background: linear-gradient(90deg,#a86bff,#ff79c6); color:#0b0310; padding:10px 16px; border-radius:999px; font-weight:700; box-shadow:0 8px 30px rgba(167,107,255,0.18); border:none; cursor:pointer }
+        .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap:1.4rem; margin-top:0.8rem }
+        
+        .feature { 
+            position: relative; padding: 2rem 1.6rem; border-radius: 18px; 
+            background: linear-gradient(180deg, rgba(30,18,50,0.5), rgba(12,8,22,0.7)); 
+            border: 1px solid rgba(168,107,255,0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            display: flex; flex-direction: column; justify-content: flex-start; overflow: hidden;
+        }
+        .feature::after {
+            content: ""; position: absolute; top: 0; right: 0; left: 0; bottom: 0;
+            background: radial-gradient(circle at top right, rgba(168,107,255,0.15), transparent 60%);
+            opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+        }
+        .feature:hover { 
+            transform: translateY(-8px) scale(1.02); border-color: rgba(168,107,255,0.4);
+            box-shadow: 0 20px 40px rgba(100,50,180,0.3); 
+        }
+        .feature:hover::after { opacity: 1; }
+        
+        .feature-icon { font-size: 1.4rem; color: #ff79c6; margin-bottom: 0.8rem; text-shadow: 0 0 12px rgba(255,121,198,0.6); }
+        .feature h4 { color:#ffd9fb; margin-bottom:0.6rem; font-size:1.15rem; font-weight:700; letter-spacing:0.05em; }
+        .feature p { color:#d7d0ff; opacity:0.95; font-size:0.95rem; line-height:1.7; flex-grow:1; }
+        
+        .meta { 
+            margin-top: 1.4rem; display: inline-block; padding: 4px 12px; 
+            background: rgba(168,107,255,0.12); border-radius: 6px; 
+            color: #e6e2ff; font-size: 0.78rem; letter-spacing: 0.08em; 
+            border: 1px solid rgba(168,107,255,0.25); width: fit-content;
+        }
 
-        .glass-card { padding:1.6rem 1.8rem; border-radius:22px; background:linear-gradient(180deg, rgba(17,10,32,0.72), rgba(12,8,22,0.6)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 16px 40px rgba(0,0,0,0.28); backdrop-filter: blur(12px); margin-left: auto; margin-right: auto; }
+        .cta { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:1.6rem 2.4rem; }
+        .cta strong { font-size: 1.15rem; color: #fff1ff; letter-spacing: 0.05em; }
+        .cta .btn { 
+            background: linear-gradient(90deg,#9d4edd,#ff79c6); color:#fff; 
+            padding:12px 28px; border-radius:999px; font-weight:700; font-size: 1rem; letter-spacing: 0.05em;
+            box-shadow:0 8px 20px rgba(168,107,255,0.25); border: 1px solid rgba(255,255,255,0.1); 
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
+        }
+        .cta .btn:hover {
+            transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 30px rgba(255,121,198,0.4); border-color: rgba(255,255,255,0.3);
+        }
 
-        .more { opacity:0; transform: translateY(24px); transition: all 520ms cubic-bezier(.2,.9,.2,1); }
-        .more.visible { opacity:1; transform: translateY(0); }
+        .more { opacity:0; transform: translateY(32px) scale(0.98); transition: all 800ms cubic-bezier(.2,.9,.2,1); }
+        .more.visible { opacity:1; transform: translateY(0) scale(1); }
 
-        /* Hero 视差层与星尘 */
+        .accordion { margin-top: 2rem; padding: 0.4rem; }
+        .accordion-toggle {
+            width: 100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+            background: transparent; border: none; padding: 16px 20px; border-radius:12px;
+            font-weight:700; color:#f8b0ff; font-size:1.05rem; letter-spacing: 0.05em; transition: background 0.3s ease;
+        }
+        .accordion-toggle:hover { background: rgba(255,255,255,0.05); }
+        .accordion-toggle:focus { outline: 2px solid rgba(157,78,221,0.4); outline-offset:2px }
+        .accordion-icon { transition: transform 320ms ease; color:#ffd8fb }
+        
+        .accordion-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 420ms cubic-bezier(.2,.9,.2,1); }
+        .accordion-panel.open { grid-template-rows: 1fr; }
+        .accordion-panel-inner { overflow: hidden; }
+
+        /* 【修改点 1】给展开内容设置最大高度，并美化内部滚动条 */
+        .spoiler-content { 
+            padding: 1.2rem 1.4rem; color: #e6e2ff; font-style: italic; line-height: 1.6;
+            border-left: 3px solid #ff79c6; margin: 20px; 
+            background: rgba(0,0,0,0.25); border-radius: 0 8px 8px 0; font-size: 0.95rem;
+            max-height: 160px; overflow-y: auto;
+        }
+        /* 内部微型滚动条美化 */
+        .spoiler-content::-webkit-scrollbar { width: 4px; }
+        .spoiler-content::-webkit-scrollbar-track { background: transparent; }
+        .spoiler-content::-webkit-scrollbar-thumb { background: rgba(168,107,255,0.4); border-radius: 4px; }
+        .spoiler-content::-webkit-scrollbar-thumb:hover { background: rgba(255,121,198,0.8); }
+
+        .cosmic-divider {
+            position: relative;
+            width: min(90%, 900px);
+            margin: 5rem auto 3rem;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 中心星 */
+        .cosmic-divider .star {
+            color: #ffd9fb;
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            z-index: 2;
+            text-shadow:
+                0 0 6px rgba(255,217,251,0.8),
+                0 0 16px rgba(168,107,255,0.6),
+                0 0 28px rgba(255,121,198,0.4);
+            animation: starPulse 2.8s ease-in-out infinite;
+        }
+
+        /* 左右渐变线 */
+        .cosmic-divider::before,
+        .cosmic-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            margin: 0 16px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(168,107,255,0.6),
+                rgba(255,121,198,0.9),
+                rgba(168,107,255,0.6),
+                transparent
+            );
+            filter: blur(0.2px);
+            opacity: 0.8;
+        }
+
+        /* 轻微发光扩散层 */
+        .cosmic-divider::after {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(168,107,255,0.25),
+                transparent 70%
+            );
+            z-index: 0;
+            opacity: 0.6;
+        }
+        /* 【修改点 2】移除 Footer 底部边距，依靠 Content 的 Padding-bottom 形成完美留白 */
+        .footer { text-align:center; color:#b89dff; margin:4rem auto 0; opacity:0.8; font-size: 0.9rem; letter-spacing: 0.05em;}
+
         .hero { perspective: 1000px }
         .hero-layer { position:absolute; inset:0; pointer-events:none; transform: translateZ(0); transition: transform 400ms ease; }
         .hero-layer.stars { background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.14) 1px, transparent 1px), radial-gradient(circle at 70% 40%, rgba(173,84,255,0.12) 1px, transparent 1px); background-size: 60px 60px, 90px 90px; opacity:0.14 }
@@ -143,54 +281,47 @@
             50% { transform: translate3d(12px, -10px, 0); opacity: 0.6 }
             100% { transform: translate3d(0, 8px, 0); opacity: 0.95 }
         }
+
+        /* 星体呼吸动画 */
+        @keyframes starPulse {
+            0%,100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.25);
+                opacity: 1;
+            }
+        }
         .particle.animate { animation-name: floatAnim; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate; }
-
         .feature { transform-style: preserve-3d; will-change: transform }
-        @media (hover: none) {
-            .hero-layer, .particle { display: none }
-            .feature { transform: none !important }
-        }
+        @media (hover: none) { .hero-layer, .particle { display: none } .feature { transform: none !important } }
 
-        /* Accordion 样式 */
-        .accordion { padding: 0.2rem; }
-        .accordion-toggle {
-            width: 100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
-            background: transparent; border: none; padding: 14px 18px; border-radius:12px; cursor:pointer;
-            font-weight:700; color:#f8b0ff; font-size:1.02rem;
-        }
-        .accordion-toggle:focus { outline: 3px solid rgba(157,78,221,0.18); outline-offset:4px }
-        .accordion-icon { transition: transform 320ms ease; color:#ffd8fb }
-        .accordion-panel { overflow: hidden; max-height: 0; transition: max-height 420ms cubic-bezier(.2,.9,.2,1); }
-        .accordion-panel.open { max-height: 400px; }
-
-        .footer { text-align:center; color:#b89dff; margin:2.6rem auto 4rem; opacity:0.9; width: min(100%, 980px); }
-
-        /* 响应式 */
         @media (max-width: 900px) {
             .cards { grid-template-columns: repeat(2, 1fr); gap: 14px }
             .hero { min-height: 100vh; padding: 3rem 2rem }
-            .logo-svg { width: 60vw }
             .hero h2 { font-size: clamp(1.4rem, 3.8vw, 2.2rem) }
             .hero-sub { font-size: 0.95rem }
-            .intro.glass-card { padding:1.6rem }
+            .glass-card { padding: 1.8rem 2rem; width: 100%; }
+            .spoiler-content { margin: 16px; }
         }
 
         @media (max-width: 520px) {
-            .cards { grid-template-columns: 1fr; gap: 12px }
+            .cards { grid-template-columns: 1fr; gap: 16px }
             .hero { min-height: 100vh; padding: 2rem 1.6rem; border-radius: 0 }
-            .logo-svg { width: 80vw }
             .crux-logo-group { letter-spacing: 0.26rem }
             .hero h2 { font-size: 1.25rem; line-height: 1.4 }
             .hero-deco::before, .hero-deco::after { width: 36px }
             .hero-deco span { font-size: 0.78rem }
             .hero-sub { font-size: 0.88rem }
-            .intro.glass-card { padding:1.2rem }
-            .feature { padding: 14px }
-            .cta { flex-direction: column; align-items: stretch; gap: 10px }
-            .cta .btn { width: 100%; padding: 12px 18px; font-size: 1rem }
-            .accordion-toggle { padding: 18px 14px; font-size: 1.03rem }
-            .accordion-panel.open { max-height: 1000px }
-            .scroll-hint { bottom: 18px }
+            .glass-card { padding: 1.6rem 1.4rem; border-radius: 18px; }
+            .feature { padding: 1.6rem 1.4rem; }
+            .cta { flex-direction: column; align-items: stretch; gap: 14px; text-align: center; }
+            .cta .btn { width: 100%; padding: 14px; font-size: 1rem; }
+            .accordion-toggle { padding: 16px 14px; font-size: 1.03rem }
+            .spoiler-content { margin: 10px; padding: 1rem 1.2rem; font-size: 0.9rem; }
+            /* 手机端适当减少挤压深度 */
+            .content.squeezed .section-more { transform: scale(0.95) translateY(-1%); margin-bottom: -30px; }
         }
     </style>
 </head>
@@ -199,8 +330,6 @@
 
         <section class="hero" id="hero" aria-label="主题区">
             <div class="hero-inner">
-                
-                <!-- 修改点：将原版独立的 header 元素挪动到了此处，并更名为 crux-logo-group -->
                 <div class="crux-logo-group">
                     <div class="logo-title-wrap">
                         <span class="crux-mark">✦</span>
@@ -221,7 +350,7 @@
             </div>
         </section>
 
-        <div class="content">
+        <div class="content" id="contentArea">
             <section class="section-more more" id="more">
                 <div class="intro glass-card">
                     <h3>秘所档案 · 远古与余烬</h3>
@@ -230,18 +359,21 @@
 
                 <div class="cards">
                     <article class="feature">
+                        <div class="feature-icon">✦</div>
                         <h4>破碎星图</h4>
-                        <p>收集并重构被撕裂的星轨，辨识南十字的余辉与与环绕古遗迹的异常轨道。</p>
+                        <p>收集并重构被撕裂的星轨，辨识南十字的余辉与环绕古遗迹的异常轨道。</p>
                         <div class="meta">观测 · 天体学</div>
                     </article>
 
                     <article class="feature">
+                        <div class="feature-icon">✦</div>
                         <h4>禁术摘录</h4>
                         <p>整理古典残卷与禁忌仪式的片段，评估对心智与现实边界的影响。</p>
                         <div class="meta">文献 · 危险等级：高</div>
                     </article>
 
                     <article class="feature">
+                        <div class="feature-icon">✦</div>
                         <h4>余火网络</h4>
                         <p>建立幸存者与秘所之间的信息链，通过余火节点交换知识与物资。</p>
                         <div class="meta">联络 · 后勤</div>
@@ -251,10 +383,10 @@
                 <div class="cta glass-card">
                     <div>
                         <strong>深入秘典</strong>
-                        <div style="color:#d7d0ff;opacity:0.9">向下探索以阅读档案全文与未公开摘录。</div>
+                        <div style="color:#d7d0ff;opacity:0.9; margin-top: 4px; font-size: 0.95rem;">向下探索以阅读档案全文与未公开摘录。</div>
                     </div>
                     <div>
-                        <button class="btn" onclick="window.scrollBy({ top: 400, behavior:'smooth' })">继续阅读</button>
+                        <button class="btn" id="btnExplore">继续阅读</button>
                     </div>
                 </div>
             </section>
@@ -267,91 +399,148 @@
                     </svg>
                 </button>
                 <div id="abyssPanel" class="accordion-panel" hidden>
-                    <div class="spoiler-content">当你凝视深渊的时候，深渊也在凝视着你。</div>
+                    <div class="accordion-panel-inner">
+                        <div class="spoiler-content">
+                            当你凝视深渊的时候，深渊也在凝视着你。<br><br>
+                            星轨在暗影中交错，秘所的记录表明，过度沉迷于远古的残章会引起精神层面的不可逆畸变。我们在此提醒所有探寻者：保持理智，切勿越界。
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="cosmic-divider">
+                <span class="star">✦</span>
+            </div> 
+            <div class="footer">终末星界秘所 · 以南十字为锚，向终末宣战</div>
         </div>
 
-        <div class="footer">终末星界秘所 · 以南十字为锚，向终末宣战</div>
     </main>
 
     <script>
         (function(){
-            const hero = document.getElementById('hero');
+            const heroEl = document.getElementById('hero');
             const hint = document.getElementById('scrollHint');
             const more = document.getElementById('more');
-            const content = document.querySelector('.content');
-            let activated = false;
-            let animating = false;
-            let locked = true; 
-            let wheelAcc = 0;
-            let wheelTimer = null;
-            let touchStartY = 0;
+            const btnExplore = document.getElementById('btnExplore');
+            const contentArea = document.getElementById('contentArea'); // 获取外层 content
+            
+            let isTransitioning = false;
+            let wheelAcc = 0; 
+            let lastWheelTime = Date.now();
 
-            function activateTheme(){
-                if(activated) return;
-                activated = true;
+            window.addEventListener('DOMContentLoaded', function(){ 
                 hint.classList.add('show');
-                hint.setAttribute('aria-hidden','false');
-            }
-
-            window.addEventListener('DOMContentLoaded', function(){ activateTheme(); });
-
-            function goToNext(){
-                if(animating) return;
-                animating = true;
-                content.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                hint.classList.remove('show');
-                more.classList.add('visible');
-                setTimeout(()=>{ animating = false; locked = false; }, 700);
-            }
-
-            function goToPrev(){
-                if(animating) return;
-                animating = true;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(()=>{ animating = false; locked = true; }, 700);
-            }
-
-            function onWheel(e){
-                if(!locked) return; 
-                e.preventDefault();
-                wheelAcc += e.deltaY;
-                clearTimeout(wheelTimer);
-                wheelTimer = setTimeout(()=> wheelAcc = 0, 200);
-                if(Math.abs(wheelAcc) > 120){
-                    if(wheelAcc > 0) goToNext(); else goToPrev();
-                    wheelAcc = 0;
-                }
-            }
-
-            hero.addEventListener('wheel', onWheel, { passive: false });
-
-            hero.addEventListener('touchstart', function(e){ touchStartY = e.touches[0].clientY; }, { passive: true });
-            hero.addEventListener('touchmove', function(e){
-                if(!locked) return;
-                const dy = touchStartY - e.touches[0].clientY;
-                if(Math.abs(dy) > 50){
-                    if(dy > 0) goToNext(); else goToPrev();
-                }
-            }, { passive: true });
-
-            hero.setAttribute('tabindex', '0');
-            hero.addEventListener('keydown', function(e){
-                if(e.key === 'ArrowDown' || e.key === 'PageDown'){
-                    e.preventDefault(); goToNext();
-                } else if(e.key === 'ArrowUp' || e.key === 'PageUp'){
-                    e.preventDefault(); goToPrev();
-                }
             });
 
+            function customSmoothScroll(targetY) {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                
+                const startY = window.scrollY;
+                const distance = targetY - startY;
+                const duration = 1100;
+                let startTime = null;
+
+                function easeInOutQuint(t) {
+                    return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+                }
+
+                function animation(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    const timeElapsed = currentTime - startTime;
+                    const progress = Math.min(timeElapsed / duration, 1);
+                    
+                    window.scrollTo(0, startY + distance * easeInOutQuint(progress));
+
+                    if (timeElapsed < duration) {
+                        requestAnimationFrame(animation);
+                    } else {
+                        setTimeout(() => { 
+                            isTransitioning = false; 
+                            wheelAcc = 0; 
+                        }, 50);
+                    }
+                }
+                requestAnimationFrame(animation);
+            }
+
+            btnExplore.addEventListener('click', () => {
+                customSmoothScroll(window.scrollY + 500);
+            });
+
+            window.addEventListener('wheel', function(e){
+                if(isTransitioning) { e.preventDefault(); return; }
+
+                const heroHeight = heroEl.offsetHeight;
+                const currentY = window.scrollY;
+
+                if (Date.now() - lastWheelTime > 150) wheelAcc = 0;
+                lastWheelTime = Date.now();
+
+                if (currentY <= 5) {
+                    e.preventDefault(); 
+                    if (e.deltaY > 0) {
+                        wheelAcc += e.deltaY;
+                        if (wheelAcc > 120) { customSmoothScroll(heroHeight); }
+                    } else { wheelAcc = 0; }
+                } 
+                else if (currentY > 5 && currentY <= heroHeight + 2) {
+                    if (e.deltaY < 0) {
+                        e.preventDefault(); 
+                        wheelAcc += e.deltaY;
+                        if (wheelAcc < -120) { customSmoothScroll(0); }
+                    } else { wheelAcc = 0; }
+                }
+            }, { passive: false });
+
+            let touchStartY = 0, touchAcc = 0;
+            window.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY; touchAcc = 0;
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if(isTransitioning) { if(e.cancelable) e.preventDefault(); return; }
+                const heroHeight = heroEl.offsetHeight;
+                const currentY = window.scrollY;
+                const deltaY = touchStartY - e.touches[0].clientY; 
+
+                if (currentY <= 5) {
+                    if(e.cancelable) e.preventDefault();
+                    if (deltaY > 0) {
+                        touchAcc = deltaY;
+                        if (touchAcc > 60) customSmoothScroll(heroHeight);
+                    }
+                } else if (currentY > 5 && currentY <= heroHeight + 2) {
+                    if (deltaY < 0) {
+                        if(e.cancelable) e.preventDefault();
+                        touchAcc = deltaY;
+                        if (touchAcc < -60) customSmoothScroll(0);
+                    }
+                }
+            }, { passive: false });
+
             window.addEventListener('scroll', function(){
-                if(window.scrollY > 80 || document.documentElement.scrollTop > 80){
+                if(isTransitioning) return;
+                const currentY = window.scrollY;
+                const heroHeight = heroEl.offsetHeight;
+
+                if(currentY > 80){
                     more.classList.add('visible');
                     hint.classList.remove('show');
+                } else {
+                    hint.classList.add('show');
+                }
+
+                if(currentY > 10 && currentY < heroHeight - 10) {
+                    clearTimeout(window.snapTimeout);
+                    window.snapTimeout = setTimeout(() => {
+                        if(window.scrollY > 10 && window.scrollY < heroHeight - 10) {
+                            customSmoothScroll(window.scrollY > heroHeight / 2 ? heroHeight : 0);
+                        }
+                    }, 150); 
                 }
             }, { passive: true });
 
+            // --- 修改点 1：手风琴增加对上部内容空间的物理挤压 (Squeeze) ---
             const abyssToggle = document.getElementById('abyssToggle');
             const abyssPanel = document.getElementById('abyssPanel');
             const abyssIcon = abyssToggle && abyssToggle.querySelector('.accordion-icon');
@@ -359,32 +548,23 @@
             function openAbyss(){
                 abyssToggle.setAttribute('aria-expanded', 'true');
                 abyssPanel.hidden = false;
-                requestAnimationFrame(()=>{
-                    abyssPanel.classList.add('open');
-                    abyssPanel.style.maxHeight = abyssPanel.scrollHeight + 'px';
-                });
+                contentArea.classList.add('squeezed'); // 触发上方内容空间折叠
+                requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ abyssPanel.classList.add('open'); }); });
                 if(abyssIcon) abyssIcon.style.transform = 'rotate(180deg)';
-                setTimeout(()=>{ const first = abyssPanel.querySelector('button, a, input, [tabindex]'); if(first) first.focus(); }, 420);
+                // 自动向下微调滚动，让用户看到展开的内容
+                setTimeout(()=> window.scrollBy({ top: 150, behavior: 'smooth' }), 200);
             }
-
             function closeAbyss(){
                 abyssToggle.setAttribute('aria-expanded', 'false');
                 abyssPanel.classList.remove('open');
-                abyssPanel.style.maxHeight = abyssPanel.scrollHeight + 'px';
-                requestAnimationFrame(()=> abyssPanel.style.maxHeight = '0px');
+                contentArea.classList.remove('squeezed'); // 解除空间折叠
                 if(abyssIcon) abyssIcon.style.transform = 'rotate(0deg)';
                 setTimeout(()=> abyssPanel.hidden = true, 420);
             }
-
             if(abyssToggle){
                 abyssToggle.addEventListener('click', function(){
                     const expanded = abyssToggle.getAttribute('aria-expanded') === 'true';
                     if(expanded) closeAbyss(); else openAbyss();
-                });
-
-                abyssToggle.addEventListener('keydown', function(e){
-                    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abyssToggle.click(); }
-                    if(e.key === 'Escape') { closeAbyss(); }
                 });
             }
 
@@ -393,29 +573,22 @@
                 const starsLayer = document.createElement('div'); starsLayer.className = 'hero-layer stars';
                 const cloudsLayer = document.createElement('div'); cloudsLayer.className = 'hero-layer clouds';
                 const particlesWrap = document.createElement('div'); particlesWrap.className = 'particles';
-                document.getElementById('hero').appendChild(starsLayer);
-                document.getElementById('hero').appendChild(cloudsLayer);
-                document.getElementById('hero').appendChild(particlesWrap);
+                heroEl.appendChild(starsLayer); heroEl.appendChild(cloudsLayer); heroEl.appendChild(particlesWrap);
 
-                document.getElementById('hero').addEventListener('mousemove', function(e){
+                heroEl.addEventListener('mousemove', function(e){
                     const rect = this.getBoundingClientRect();
-                    const cx = (e.clientX - rect.left) / rect.width - 0.5; 
-                    const cy = (e.clientY - rect.top) / rect.height - 0.5;
+                    const cx = (e.clientX - rect.left) / rect.width - 0.5; const cy = (e.clientY - rect.top) / rect.height - 0.5;
                     starsLayer.style.transform = `translate3d(${ -cx * 20 }px, ${ -cy * 12 }px, 0)`;
                     cloudsLayer.style.transform = `translate3d(${ -cx * 8 }px, ${ -cy * 6 }px, 0)`;
                 });
 
-                const particleCount = 14;
-                for(let i=0;i<particleCount;i++){
+                for(let i=0;i<14;i++){
                     const p = document.createElement('div'); p.className='particle';
-                    p.style.left = Math.random()*100 + '%';
-                    p.style.top = Math.random()*80 + '%';
+                    p.style.left = Math.random()*100 + '%'; p.style.top = Math.random()*80 + '%';
                     const s = 4 + Math.random()*10; p.style.width = s+'px'; p.style.height = s+'px';
                     particlesWrap.appendChild(p);
-                    const dur = 8000 + Math.random()*10000; 
-                    const delay = Math.random()*3000; 
-                    p.style.animationDuration = dur + 'ms';
-                    p.style.animationDelay = delay + 'ms';
+                    p.style.animationDuration = (8000 + Math.random()*10000) + 'ms';
+                    p.style.animationDelay = (Math.random()*3000) + 'ms';
                     p.style.opacity = 0.85 + Math.random()*0.15;
                     p.classList.add('animate');
                 }
@@ -424,15 +597,123 @@
                 features.forEach(fn=>{
                     fn.addEventListener('pointermove', function(e){
                         const r = this.getBoundingClientRect();
-                        const px = (e.clientX - r.left) / r.width - 0.5; 
-                        const py = (e.clientY - r.top) / r.height - 0.5;
-                        const rx = (py)*8; const ry = (px)*-10;
-                        this.style.transform = `translateZ(6px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+                        const px = (e.clientX - r.left) / r.width - 0.5; const py = (e.clientY - r.top) / r.height - 0.5;
+                        this.style.transform = `translateZ(6px) rotateX(${py*8}deg) rotateY(${px*-10}deg)`;
                     });
                     fn.addEventListener('pointerleave', function(){ this.style.transform = ''; });
                 });
             }
 
+            if(!isTouch) {
+                const cvs = document.createElement('canvas');
+                cvs.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
+                document.body.appendChild(cvs);
+                const ctx = cvs.getContext('2d');
+                let w = window.innerWidth, h = window.innerHeight;
+                cvs.width = w; cvs.height = h;
+
+                window.addEventListener('resize', () => { w = window.innerWidth; h = window.innerHeight; cvs.width = w; cvs.height = h; });
+
+                const mouse = { x: w/2, y: h/2, tx: w/2, ty: h/2 };
+                let history = [];
+                let sparks =[];
+                let hoverState = false;
+                let clickScale = 1;
+                let starRotation = 0; 
+
+                window.addEventListener('mousemove', e => { mouse.tx = e.clientX; mouse.ty = e.clientY; });
+
+                document.addEventListener('mouseover', e => {
+                    if(e.target.closest('button') || e.target.closest('a') || e.target.closest('.feature') || e.target.closest('.accordion-toggle') || e.target.closest('.spoiler-content')) {
+                        hoverState = true;
+                    } else { hoverState = false; }
+                });
+
+                document.addEventListener('mousedown', () => {
+                    clickScale = 0.5; 
+                    for(let i=0; i<8; i++) {
+                        const angle = (Math.PI * 2 / 8) * i + Math.random()*0.5;
+                        sparks.push({
+                            x: mouse.x, y: mouse.y,
+                            vx: Math.cos(angle) * (Math.random() * 4 + 2),
+                            vy: Math.sin(angle) * (Math.random() * 4 + 2),
+                            life: 1, size: Math.random() * 2 + 1.5
+                        });
+                    }
+                });
+                document.addEventListener('mouseup', () => {
+                    clickScale = 1.4; 
+                    setTimeout(() => clickScale = 1, 150);
+                });
+
+                function drawStar(cx, cy, outer, inner, color, glow, rotOffset) {
+                    let rot = (Math.PI / 2 * 3) + rotOffset;
+                    let step = Math.PI / 4; 
+                    ctx.beginPath();
+                    ctx.moveTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer);
+                    for (let i = 0; i < 4; i++) {
+                        ctx.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer); rot += step;
+                        ctx.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner); rot += step;
+                    }
+                    ctx.closePath();
+                    
+                    if(glow) { ctx.shadowBlur = 18; ctx.shadowColor = glow; } 
+                    else { ctx.shadowBlur = 0; }
+                    ctx.fillStyle = color; ctx.fill(); ctx.shadowBlur = 0;
+                }
+
+                function renderCursor() {
+                    ctx.clearRect(0, 0, w, h);
+
+                    mouse.x += (mouse.tx - mouse.x) * 0.45;
+                    mouse.y += (mouse.ty - mouse.y) * 0.45;
+
+                    history.push({x: mouse.x, y: mouse.y});
+                    if(history.length > 14) history.shift();
+
+                    if (history.length > 2) {
+                        ctx.beginPath();
+                        ctx.moveTo(history[0].x, history[0].y);
+                        for (let i = 1; i < history.length - 1; i++) {
+                            const xc = (history[i].x + history[i + 1].x) / 2;
+                            const yc = (history[i].y + history[i + 1].y) / 2;
+                            ctx.quadraticCurveTo(history[i].x, history[i].y, xc, yc);
+                        }
+                        ctx.quadraticCurveTo(
+                            history[history.length - 1].x, history[history.length - 1].y, 
+                            history[history.length - 1].x, history[history.length - 1].y
+                        );
+                        
+                        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                        const grad = ctx.createLinearGradient(history[0].x, history[0].y, mouse.x, mouse.y);
+                        grad.addColorStop(0, 'rgba(168, 107, 255, 0)');
+                        grad.addColorStop(1, 'rgba(255, 121, 198, 0.7)');
+                        ctx.strokeStyle = grad; ctx.lineWidth = hoverState ? 4 : 2; ctx.stroke();
+                    }
+
+                    for(let i = sparks.length - 1; i >= 0; i--) {
+                        const p = sparks[i];
+                        p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                        if(p.life <= 0) { sparks.splice(i, 1); } 
+                        else {
+                            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(255, 121, 198, ${p.life})`; ctx.fill();
+                        }
+                    }
+
+                    starRotation += hoverState ? 0.04 : 0.005;
+
+                    let targetOuter = hoverState ? 20 : 14;
+                    let targetInner = hoverState ? 7 : 4;
+                    targetOuter *= clickScale; targetInner *= clickScale;
+
+                    drawStar(mouse.x, mouse.y, targetOuter + 5, targetInner + 2, 'rgba(168, 107, 255, 0.25)', 'rgba(255, 121, 198, 0.6)', starRotation);
+                    drawStar(mouse.x, mouse.y, targetOuter, targetInner, '#ffffff', '#ff79c6', starRotation);
+
+                    requestAnimationFrame(renderCursor);
+                }
+                renderCursor();
+            }
         })();
     </script>
 </body>
