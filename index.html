@@ -4,220 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>终末星界秘所 | CRUX南十字</title>
+    <link rel="icon" type="image/png" href="南十字Crux.png">
+    <link rel="apple-touch-icon" href="南十字Crux.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            min-height: 100%;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             background: radial-gradient(circle at top, #2b1b3b 0%, #09070d 40%, #040307 100%);
             color: #e6e2ff;
             font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
         }
 
         body::before {
             content: "";
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.08), transparent 18%),
-                        radial-gradient(circle at 85% 15%, rgba(173, 84, 255, 0.12), transparent 14%),
-                        linear-gradient(160deg, rgba(86, 50, 162, 0.15), transparent 45%, rgba(3, 2, 8, 0.7));
-            pointer-events: none;
-            z-index: -2;
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.06), transparent 18%),
+                        radial-gradient(circle at 85% 15%, rgba(173,84,255,0.08), transparent 14%),
+                        linear-gradient(160deg, rgba(86,50,162,0.1), transparent 45%, rgba(3,2,8,0.7));
+            pointer-events: none; z-index: -2;
         }
 
-        body::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
-            background-size: 80px 80px;
-            opacity: 0.12;
-            transform: translateZ(0);
-            z-index: -1;
-        }
+        .page { width: min(100%, 980px); margin: 3rem auto; padding: 0; }
 
-        .page {
-            width: min(100%, 980px);
-            padding: 2rem;
-            border-radius: 32px;
-            background: rgba(12, 8, 22, 0.72);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(18px);
-            position: relative;
-            overflow: hidden;
-        }
+        .crux-logo { text-align: center; margin-bottom: 1rem; }
 
-        .page::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 35%, rgba(255, 255, 255, 0.02));
-            pointer-events: none;
-        }
-
-        .crux-logo {
-            font-size: clamp(3rem, 5vw, 4.8rem);
-            color: #d7b9ff;
-            letter-spacing: 0.8rem;
-            text-align: center;
-            text-shadow: 0 0 24px rgba(157, 78, 221, 0.55), 0 0 60px rgba(255, 121, 198, 0.2);
-            margin-bottom: 1.2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .subtitle {
-            display: block;
-            margin-top: 0.6rem;
-            font-size: 1rem;
-            color: #cdb9ff;
-            opacity: 0.88;
-            letter-spacing: 0.16em;
-        }
+        header.crux-logo { font-size: clamp(2.4rem, 6vw, 4.2rem); color: #d7b9ff; letter-spacing: 0.7rem; }
+        .subtitle { display:block; margin-top:0.4rem; font-size:0.95rem; color:#cdb9ff; opacity:0.9; letter-spacing:0.12em }
 
         .hero {
-            padding: 1.6rem 2rem;
-            margin: 0 auto 1.8rem;
-            border-radius: 26px;
-            background: rgba(21, 12, 42, 0.72);
-            border: 1px solid rgba(157, 78, 221, 0.2);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
+            min-height: 78vh;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            padding: 2.4rem; border-radius: 24px;
+            background: linear-gradient(180deg, rgba(21,12,42,0.86), rgba(12,8,22,0.6));
+            border: 1px solid rgba(157,78,221,0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.48);
+            position: relative; overflow: hidden; cursor: pointer;
         }
 
-        .hero h2 {
-            color: #f6c0ff;
-            font-size: clamp(1.4rem, 2.5vw, 2rem);
-            line-height: 1.6;
-            text-align: center;
-            letter-spacing: 0.02em;
-            margin-bottom: 0.8rem;
+        .hero-inner { max-width: 880px; text-align: center; }
+        .hero h2 { color: #f6c0ff; font-size: clamp(1.6rem, 4.8vw, 2.6rem); line-height:1.2; margin-bottom: 0.25rem; font-weight:700; letter-spacing:0.02em }
+
+        /* 装饰性副标题与分割线 */
+        .hero-deco { margin-top: 12px; height:18px; display:flex; align-items:center; justify-content:center; gap:14px }
+        .hero-deco::before, .hero-deco::after { content:""; display:block; width:64px; height:1px; background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(157,78,221,0.16)); border-radius:2px }
+        .hero-deco span { color:#ffd8fb; font-size:0.85rem; opacity:0.95; letter-spacing:0.18em }
+
+        .hero-sub { margin-top: 6px; font-size: 0.98rem; color: transparent; background: linear-gradient(90deg,#ffd9fb,#d7b9ff); -webkit-background-clip: text; background-clip: text; opacity:0.98; font-style: italic; text-shadow: 0 6px 24px rgba(167,107,255,0.06); }
+
+        .hero p { color:#d7d0ff; opacity:0.95; font-size:1rem; line-height:1.8 }
+
+        .theme-banner {
+            position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.04); color:#ffe6ff; padding:8px 14px; border-radius:999px;
+            border:1px solid rgba(255,255,255,0.06); backdrop-filter: blur(6px);
+            opacity:0; transform-origin:center; transition: all 360ms ease;
         }
 
-        .hero p {
-            color: #d7d0ff;
-            font-size: 1rem;
-            line-height: 1.8;
-            max-width: 820px;
-            margin: 0 auto;
-            text-align: justify;
+        .theme-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .scroll-hint {
+            position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+            display:flex; align-items:center; gap:10px; color:#ffd8fb; font-weight:600; opacity:0; transition: all 300ms ease;
         }
 
-        .content {
-            display: grid;
-            gap: 1.6rem;
+        .scroll-hint.show { opacity:1; transform: translateX(-50%) translateY(0); }
+
+        .arrow {
+            width: 18px; height: 18px; border-left:2px solid #ffd8fb; border-bottom:2px solid #ffd8fb; transform: rotate(-45deg);
+            animation: bounce 1.4s infinite;
         }
 
-        .glass-card {
-            padding: 1.6rem 1.8rem;
-            border-radius: 22px;
-            background: rgba(17, 10, 32, 0.7);
-            border: 1px solid rgba(157, 78, 221, 0.18);
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(14px);
-            color: #e7e3ff;
-        }
+        @keyframes bounce { 0%{ transform:translateY(0) rotate(-45deg)} 50%{ transform:translateY(8px) rotate(-45deg)} 100%{transform:translateY(0) rotate(-45deg)} }
 
-        .glass-card strong {
-            color: #f8efff;
-        }
+        .content { display:block; gap:1.4rem; margin-top: 2rem }
 
-        details {
-            background: rgba(23, 13, 44, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 1.35rem 1.6rem;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-        }
+        .section-more { display: grid; gap: 1.2rem; padding: 1.6rem 0 0 0 }
 
-        details:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 40px rgba(123, 70, 201, 0.28);
-        }
+        .intro.glass-card { padding:2rem; border-radius:20px; background: linear-gradient(180deg, rgba(18,12,34,0.78), rgba(12,8,22,0.5)); }
+        .intro h3 { color:#ffe6ff; margin-bottom:0.4rem; font-size:1.25rem }
+        .intro p { color:#e7e3ff; opacity:0.92; line-height:1.7 }
 
-        summary {
-            font-size: 1.05rem;
-            color: #f8b0ff;
-            font-weight: 700;
-            cursor: pointer;
-            list-style: none;
-            position: relative;
-        }
+        .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-top:0.6rem }
+        .feature { padding:1.2rem; border-radius:14px; background: linear-gradient(180deg, rgba(24,14,46,0.68), rgba(12,8,22,0.48)); border:1px solid rgba(157,78,221,0.08); box-shadow: 0 10px 30px rgba(10,6,20,0.45); transition: transform .32s ease, box-shadow .32s ease }
+        .feature:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(72,40,120,0.36) }
+        .feature h4 { color:#ffd9fb; margin-bottom:0.4rem; font-size:1.05rem }
+        .feature p { color:#e8e4ff; opacity:0.95; font-size:0.95rem; line-height:1.6 }
 
-        summary::marker {
-            content: "▸";
-            color: #e28cff;
-            font-size: 1.1rem;
-            margin-right: 0.45rem;
-        }
+        .meta { margin-top:0.8rem; font-size:0.82rem; color:#cdb9ff; opacity:0.9 }
 
-        .spoiler-content {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            color: #f0ecff;
-            line-height: 1.75;
-            font-style: italic;
-        }
+        .cta { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:1rem 1.2rem; border-radius:14px; margin-top:0.8rem; }
+        .cta .btn { background: linear-gradient(90deg,#a86bff,#ff79c6); color:#0b0310; padding:10px 16px; border-radius:999px; font-weight:700; box-shadow:0 8px 30px rgba(167,107,255,0.18); border:none; cursor:pointer }
 
-        .footer {
-            margin-top: 2rem;
-            text-align: center;
-            color: #b89dff;
-            font-size: 0.95rem;
-            opacity: 0.86;
-            letter-spacing: 0.08em;
-        }
+        .glass-card { padding:1.6rem 1.8rem; border-radius:22px; background:linear-gradient(180deg, rgba(17,10,32,0.72), rgba(12,8,22,0.6)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 16px 40px rgba(0,0,0,0.28); backdrop-filter: blur(12px); }
 
-        @media (max-width: 640px) {
-            .page {
-                padding: 1.4rem;
-            }
+        .more { opacity:0; transform: translateY(24px); transition: all 520ms cubic-bezier(.2,.9,.2,1); }
+        .more.visible { opacity:1; transform: translateY(0); }
 
-            .hero {
-                padding: 1.2rem 1.3rem;
-            }
+        .footer { text-align:center; color:#b89dff; margin:2.6rem 0 4rem; opacity:0.9 }
 
-            .crux-logo {
-                letter-spacing: 0.35rem;
-            }
-
-            .hero h2 {
-                font-size: 1.45rem;
-            }
-        }
+        @media (max-width:640px){ .hero{ padding:1.6rem; min-height:70vh } header.crux-logo{ letter-spacing:0.36rem } }
     </style>
 </head>
 <body>
     <main class="page">
         <header class="crux-logo">✦ CRUX ✦<span class="subtitle">南十字·终末星界秘所</span></header>
 
-        <section class="hero">
-            <h3>终末之世，天灾与深渊并行，畸变与诅咒笼罩大地。薪火将熄，方舟的航船在荒芜大地上迷失方向，古神的呓语腐蚀着每一个尚存理智的灵魂。</h3>
-            <p>这里是终末之世的隐秘结社，以 Crux 十字为圣徽，以五颗星轨为秘契，漫步于灾难与深渊之间。<strong>他们窥探古神的禁忌知识，却拒绝被混沌吞噬；他们触碰轮回的底层法则，却拒绝向宿命低头；他们于末世的黑暗中，收集着每一丝即将熄灭的余火，只为在终焉降临的那一刻，以十字为号，燃尽最后一丝光，对抗所有注定的终末。</strong></p>
+        <section class="hero" id="hero" aria-label="主题区">
+            <div class="theme-banner" id="themeBanner">主题：暗紫 · 星域</div>
+            <div class="hero-inner">
+                <h2>终末之世，天灾与深渊并行，畸变与诅咒笼罩大地。</h2>
+            </div>
+
+            <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+                <div class="arrow"></div>
+                <div class="hint-text">向下滑动以揭示更多内容与秘典。</div>
+            </div>
         </section>
 
         <div class="content">
-            <div class="glass-card">
-                <strong>隐秘箴言</strong>
-                <p>终末不仅是终结，更是重塑。每一次黑暗的涌动，都是新纪元的次序在另一个层面上重生。</p>
-            </div>
+            <section class="section-more more" id="more">
+                <div class="intro glass-card">
+                    <h3>秘所档案 · 远古与余烬</h3>
+                    <p>秘所收集终末边缘的片段记录：旧日仪典、星轨残篇、以及那些在深渊中回响的低语。此处为选粹，一览结社研究方向与重要发现。</p>
+                </div>
 
-            <details>
+                <div class="cards">
+                    <article class="feature">
+                        <h4>破碎星图</h4>
+                        <p>收集并重构被撕裂的星轨，辨识南十字的余辉与与环绕古遗迹的异常轨道。</p>
+                        <div class="meta">观测 · 天体学</div>
+                    </article>
+
+                    <article class="feature">
+                        <h4>禁术摘录</h4>
+                        <p>整理古典残卷与禁忌仪式的片段，评估对心智与现实边界的影响。</p>
+                        <div class="meta">文献 · 危险等级：高</div>
+                    </article>
+
+                    <article class="feature">
+                        <h4>余火网络</h4>
+                        <p>建立幸存者与秘所之间的信息链，通过余火节点交换知识与物资。</p>
+                        <div class="meta">联络 · 后勤</div>
+                    </article>
+                </div>
+
+                <div class="cta glass-card">
+                    <div>
+                        <strong>深入秘典</strong>
+                        <div style="color:#d7d0ff;opacity:0.9">向下探索以阅读档案全文与未公开摘录。</div>
+                    </div>
+                    <div>
+                        <button class="btn" onclick="window.scrollBy({ top: 400, behavior:'smooth' })">继续阅读</button>
+                    </div>
+                </div>
+            </section>
+
+            <details class="glass-card">
                 <summary>点击查看深渊箴言</summary>
                 <div class="spoiler-content">当你凝视深渊的时候，深渊也在凝视着你。</div>
             </details>
@@ -225,5 +170,97 @@
 
         <div class="footer">终末星界秘所 · 以南十字为锚，向终末宣战</div>
     </main>
+
+    <script>
+        (function(){
+            const hero = document.getElementById('hero');
+            const banner = document.getElementById('themeBanner');
+            const hint = document.getElementById('scrollHint');
+            const more = document.getElementById('more');
+            const content = document.querySelector('.content');
+            let activated = false;
+            let animating = false;
+            let locked = true; // 锁定原生滚动，直到我们触发一次整页跳转
+            let wheelAcc = 0;
+            let wheelTimer = null;
+            let touchStartY = 0;
+
+            function activateTheme(){
+                if(activated) return;
+                activated = true;
+                banner.classList.add('show');
+                hint.classList.add('show');
+                hint.setAttribute('aria-hidden','false');
+            }
+
+            // 页面加载立即激活主题效果
+            window.addEventListener('DOMContentLoaded', function(){
+                activateTheme();
+            });
+
+            // 整页滚动到下一个区域
+            function goToNext(){
+                if(animating) return;
+                animating = true;
+                // 平滑滚动到内容区顶部
+                content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                hint.classList.remove('show');
+                more.classList.add('visible');
+                // 解锁原生滚动，允许后续正常滚动
+                setTimeout(()=>{ animating = false; locked = false; }, 700);
+            }
+
+            function goToPrev(){
+                if(animating) return;
+                animating = true;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(()=>{ animating = false; locked = true; }, 700);
+            }
+
+            // 鼠标滚轮阈值检测（passive: false 以便 preventDefault）
+            function onWheel(e){
+                if(!locked) return; // 若已解锁则恢复原生滚动
+                e.preventDefault();
+                wheelAcc += e.deltaY;
+                clearTimeout(wheelTimer);
+                wheelTimer = setTimeout(()=> wheelAcc = 0, 200);
+                if(Math.abs(wheelAcc) > 120){
+                    if(wheelAcc > 0) goToNext(); else goToPrev();
+                    wheelAcc = 0;
+                }
+            }
+
+            hero.addEventListener('wheel', onWheel, { passive: false });
+
+            // 触摸滑动支持（移动端）
+            hero.addEventListener('touchstart', function(e){ touchStartY = e.touches[0].clientY; }, { passive: true });
+            hero.addEventListener('touchmove', function(e){
+                if(!locked) return;
+                const dy = touchStartY - e.touches[0].clientY;
+                if(Math.abs(dy) > 50){
+                    if(dy > 0) goToNext(); else goToPrev();
+                }
+            }, { passive: true });
+
+            // 提示点击或按键也能触发（为辅助设备）
+            hero.setAttribute('tabindex', '0');
+            hero.addEventListener('keydown', function(e){
+                if(e.key === 'ArrowDown' || e.key === 'PageDown'){
+                    e.preventDefault(); goToNext();
+                } else if(e.key === 'ArrowUp' || e.key === 'PageUp'){
+                    e.preventDefault(); goToPrev();
+                }
+            });
+
+            // 当用户通过程序滚动或手动滚动到内容区时，确保 reveal 动画触发
+            window.addEventListener('scroll', function(){
+                if(window.scrollY > 80 || document.documentElement.scrollTop > 80){
+                    more.classList.add('visible');
+                    hint.classList.remove('show');
+                }
+            }, { passive: true });
+
+        })();
+    </script>
 </body>
 </html>
