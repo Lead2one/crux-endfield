@@ -91,13 +91,10 @@
         @keyframes bounce { 0%{ transform:translateY(0) rotate(-45deg)} 50%{ transform:translateY(8px) rotate(-45deg)} 100%{transform:translateY(0) rotate(-45deg)} }
 
         .content { 
-            display: block; width: 100%; padding-top: 3rem; 
-            /* 【修改点 2】底部加入 10vh 留白，防止 Footer 贴底 */
-            padding-bottom: 10vh;
+            display: block; width: 100%; padding-top: 3rem; padding-bottom: 10vh;
             background: linear-gradient(180deg, #07040e 0%, #040307 15%, #040307 100%);
         }
         
-        /* 【修改点 1】高级空间折叠与挤压动效 */
         .section-more { 
             display: grid; gap: 1.6rem; padding: 1.6rem 0 0 0; width: min(100%, 1020px); margin: 0 auto; 
             transform-origin: top center;
@@ -105,12 +102,8 @@
                         margin-bottom 420ms cubic-bezier(.2,.9,.2,1), 
                         filter 420ms ease, opacity 420ms ease;
         }
-        /* 触发挤压时的样式：缩小、上移、模糊并压缩物理高度 */
         .content.squeezed .section-more {
-            transform: scale(0.93) translateY(-1%);
-            margin-bottom: -40px;
-            filter: blur(3px) brightness(0.6);
-            opacity: 0.85;
+            transform: scale(0.93) translateY(-1%); margin-bottom: -40px; filter: blur(3px) brightness(0.6); opacity: 0.85;
         }
 
         .glass-card { 
@@ -146,8 +139,7 @@
             opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
         }
         .feature:hover { 
-            transform: translateY(-8px) scale(1.02); border-color: rgba(168,107,255,0.4);
-            box-shadow: 0 20px 40px rgba(100,50,180,0.3); 
+            transform: translateY(-8px) scale(1.02); border-color: rgba(168,107,255,0.4); box-shadow: 0 20px 40px rgba(100,50,180,0.3); 
         }
         .feature:hover::after { opacity: 1; }
         
@@ -191,76 +183,42 @@
         .accordion-panel.open { grid-template-rows: 1fr; }
         .accordion-panel-inner { overflow: hidden; }
 
-        /* 【修改点 1】给展开内容设置最大高度，并美化内部滚动条 */
         .spoiler-content { 
             padding: 1.2rem 1.4rem; color: #e6e2ff; font-style: italic; line-height: 1.6;
             border-left: 3px solid #ff79c6; margin: 20px; 
             background: rgba(0,0,0,0.25); border-radius: 0 8px 8px 0; font-size: 0.95rem;
             max-height: 160px; overflow-y: auto;
         }
-        /* 内部微型滚动条美化 */
         .spoiler-content::-webkit-scrollbar { width: 4px; }
         .spoiler-content::-webkit-scrollbar-track { background: transparent; }
         .spoiler-content::-webkit-scrollbar-thumb { background: rgba(168,107,255,0.4); border-radius: 4px; }
         .spoiler-content::-webkit-scrollbar-thumb:hover { background: rgba(255,121,198,0.8); }
 
+        /* --- 【修改点 2】使用 Flexbox 实现大星辉光的绝对物理居中 --- */
         .cosmic-divider {
-            position: relative;
-            width: min(90%, 900px);
-            margin: 5rem auto 3rem;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
+            width: min(90%, 900px); margin: 5rem auto 3rem;
         }
-
-        /* 中心星 */
+        .cosmic-divider::before, .cosmic-divider::after {
+            content: ""; flex: 1; height: 1px;
+        }
+        .cosmic-divider::before { background: linear-gradient(90deg, transparent, rgba(168,107,255,0.6), rgba(255,121,198,0.9)); }
+        .cosmic-divider::after { background: linear-gradient(270deg, transparent, rgba(168,107,255,0.6), rgba(255,121,198,0.9)); }
+        
         .cosmic-divider .star {
+            margin: 0 24px; position: relative;
+            font-size: min(32px, 8vw); font-weight: 700; letter-spacing: 0; line-height: 1;
             color: #ffd9fb;
-            font-size: 14px;
-            letter-spacing: 0.2em;
-            z-index: 2;
-            text-shadow:
-                0 0 6px rgba(255,217,251,0.8),
-                0 0 16px rgba(168,107,255,0.6),
-                0 0 28px rgba(255,121,198,0.4);
+            text-shadow: 0 0 10px rgba(255,217,251,1), 0 0 24px rgba(168,107,255,0.9), 0 0 40px rgba(255,121,198,0.7), 0 0 80px rgba(255,121,198,0.4);
             animation: starPulse 2.8s ease-in-out infinite;
+            transform: translateY(-2px); /* 光学中心微调 */
+        }
+        .cosmic-divider .star::after {
+            content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            width: 80px; height: 80px; background: radial-gradient(circle, rgba(255,121,198,0.25), transparent 70%); z-index: -1;
         }
 
-        /* 左右渐变线 */
-        .cosmic-divider::before,
-        .cosmic-divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            margin: 0 16px;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(168,107,255,0.6),
-                rgba(255,121,198,0.9),
-                rgba(168,107,255,0.6),
-                transparent
-            );
-            filter: blur(0.2px);
-            opacity: 0.8;
-        }
-
-        /* 轻微发光扩散层 */
-        .cosmic-divider::after {
-            position: absolute;
-            width: 100%;
-            height: 6px;
-            background: radial-gradient(
-                ellipse at center,
-                rgba(168,107,255,0.25),
-                transparent 70%
-            );
-            z-index: 0;
-            opacity: 0.6;
-        }
-        /* 【修改点 2】移除 Footer 底部边距，依靠 Content 的 Padding-bottom 形成完美留白 */
-        .footer { text-align:center; color:#b89dff; margin:4rem auto 0; opacity:0.8; font-size: 0.9rem; letter-spacing: 0.05em;}
+        .footer { text-align:center; color:#b89dff; margin:0 auto; opacity:0.8; font-size: 0.9rem; letter-spacing: 0.05em;}
 
         .hero { perspective: 1000px }
         .hero-layer { position:absolute; inset:0; pointer-events:none; transform: translateZ(0); transition: transform 400ms ease; }
@@ -276,23 +234,8 @@
             filter: drop-shadow(0 0 6px rgba(168,107,255,0.12));
         }
 
-        @keyframes floatAnim {
-            0% { transform: translate3d(0, 0, 0); opacity: 0.9 }
-            50% { transform: translate3d(12px, -10px, 0); opacity: 0.6 }
-            100% { transform: translate3d(0, 8px, 0); opacity: 0.95 }
-        }
-
-        /* 星体呼吸动画 */
-        @keyframes starPulse {
-            0%,100% {
-                transform: scale(1);
-                opacity: 0.9;
-            }
-            50% {
-                transform: scale(1.25);
-                opacity: 1;
-            }
-        }
+        @keyframes floatAnim { 0% { transform: translate3d(0, 0, 0); opacity: 0.9 } 50% { transform: translate3d(12px, -10px, 0); opacity: 0.6 } 100% { transform: translate3d(0, 8px, 0); opacity: 0.95 } }
+        @keyframes starPulse { 0%,100% { transform: scale(1) translateY(-2px); opacity: 0.9; } 50% { transform: scale(1.25) translateY(-2px); opacity: 1; } }
         .particle.animate { animation-name: floatAnim; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate; }
         .feature { transform-style: preserve-3d; will-change: transform }
         @media (hover: none) { .hero-layer, .particle { display: none } .feature { transform: none !important } }
@@ -320,8 +263,8 @@
             .cta .btn { width: 100%; padding: 14px; font-size: 1rem; }
             .accordion-toggle { padding: 16px 14px; font-size: 1.03rem }
             .spoiler-content { margin: 10px; padding: 1rem 1.2rem; font-size: 0.9rem; }
-            /* 手机端适当减少挤压深度 */
             .content.squeezed .section-more { transform: scale(0.95) translateY(-1%); margin-bottom: -30px; }
+            .cosmic-divider .star { margin: 0 16px; }
         }
     </style>
 </head>
@@ -407,9 +350,11 @@
                     </div>
                 </div>
             </div>
+            
             <div class="cosmic-divider">
                 <span class="star">✦</span>
             </div> 
+            
             <div class="footer">终末星界秘所 · 以南十字为锚，向终末宣战</div>
         </div>
 
@@ -421,7 +366,7 @@
             const hint = document.getElementById('scrollHint');
             const more = document.getElementById('more');
             const btnExplore = document.getElementById('btnExplore');
-            const contentArea = document.getElementById('contentArea'); // 获取外层 content
+            const contentArea = document.getElementById('contentArea');
             
             let isTransitioning = false;
             let wheelAcc = 0; 
@@ -431,13 +376,13 @@
                 hint.classList.add('show');
             });
 
-            function customSmoothScroll(targetY) {
-                if (isTransitioning) return;
+            // 包含持续时间定制的高级缓动滚动函数
+            function customSmoothScroll(targetY, duration = 1100, force = false) {
+                if (isTransitioning && !force) return;
                 isTransitioning = true;
                 
                 const startY = window.scrollY;
                 const distance = targetY - startY;
-                const duration = 1100;
                 let startTime = null;
 
                 function easeInOutQuint(t) {
@@ -540,7 +485,7 @@
                 }
             }, { passive: true });
 
-            // --- 修改点 1：手风琴增加对上部内容空间的物理挤压 (Squeeze) ---
+            // --- 修改点 1：手风琴平滑运镜追焦 ---
             const abyssToggle = document.getElementById('abyssToggle');
             const abyssPanel = document.getElementById('abyssPanel');
             const abyssIcon = abyssToggle && abyssToggle.querySelector('.accordion-icon');
@@ -548,19 +493,37 @@
             function openAbyss(){
                 abyssToggle.setAttribute('aria-expanded', 'true');
                 abyssPanel.hidden = false;
-                contentArea.classList.add('squeezed'); // 触发上方内容空间折叠
-                requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ abyssPanel.classList.add('open'); }); });
+                contentArea.classList.add('squeezed'); 
+                
+                requestAnimationFrame(()=>{ 
+                    requestAnimationFrame(()=>{ 
+                        abyssPanel.classList.add('open'); 
+                        
+                        // 延迟一瞬间计算目标高度，使用高级物理引擎平滑追踪
+                        setTimeout(() => {
+                            const rect = abyssToggle.getBoundingClientRect();
+                            // 将手风琴标题推送到屏幕上方 30% 的最佳视野处
+                            let targetY = window.scrollY + rect.top - (window.innerHeight * 0.3);
+                            // 防止过度滚动导致穿帮
+                            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                            targetY = Math.max(0, Math.min(targetY, maxScroll));
+                            
+                            // 700ms 轻盈平滑运镜
+                            customSmoothScroll(targetY, 700, true);
+                        }, 120);
+                    }); 
+                });
                 if(abyssIcon) abyssIcon.style.transform = 'rotate(180deg)';
-                // 自动向下微调滚动，让用户看到展开的内容
-                setTimeout(()=> window.scrollBy({ top: 150, behavior: 'smooth' }), 200);
             }
+            
             function closeAbyss(){
                 abyssToggle.setAttribute('aria-expanded', 'false');
                 abyssPanel.classList.remove('open');
-                contentArea.classList.remove('squeezed'); // 解除空间折叠
+                contentArea.classList.remove('squeezed');
                 if(abyssIcon) abyssIcon.style.transform = 'rotate(0deg)';
                 setTimeout(()=> abyssPanel.hidden = true, 420);
             }
+            
             if(abyssToggle){
                 abyssToggle.addEventListener('click', function(){
                     const expanded = abyssToggle.getAttribute('aria-expanded') === 'true';
