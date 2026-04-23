@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终末星界秘所 | CRUX南十字</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #2b1b3b 0%, #09070d 40%, #040307 100%);
+            color: #e6e2ff;
+            font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.08), transparent 18%),
+                        radial-gradient(circle at 85% 15%, rgba(173, 84, 255, 0.12), transparent 14%),
+                        linear-gradient(160deg, rgba(86, 50, 162, 0.15), transparent 45%, rgba(3, 2, 8, 0.7));
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
+            background-size: 80px 80px;
+            opacity: 0.12;
+            transform: translateZ(0);
+            z-index: -1;
+        }
+
+        .page {
+            width: min(100%, 980px);
+            padding: 2rem;
+            border-radius: 32px;
+            background: rgba(12, 8, 22, 0.72);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 35%, rgba(255, 255, 255, 0.02));
+            pointer-events: none;
+        }
+
+        .crux-logo {
+            font-size: clamp(3rem, 5vw, 4.8rem);
+            color: #d7b9ff;
+            letter-spacing: 0.8rem;
+            text-align: center;
+            text-shadow: 0 0 24px rgba(157, 78, 221, 0.55), 0 0 60px rgba(255, 121, 198, 0.2);
+            margin-bottom: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            display: block;
+            margin-top: 0.6rem;
+            font-size: 1rem;
+            color: #cdb9ff;
+            opacity: 0.88;
+            letter-spacing: 0.16em;
+        }
+
+        .hero {
+            padding: 1.6rem 2rem;
+            margin: 0 auto 1.8rem;
+            border-radius: 26px;
+            background: rgba(21, 12, 42, 0.72);
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h2 {
+            color: #f6c0ff;
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            line-height: 1.6;
+            text-align: center;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.8rem;
+        }
+
+        .hero p {
+            color: #d7d0ff;
+            font-size: 1rem;
+            line-height: 1.8;
+            max-width: 820px;
+            margin: 0 auto;
+            text-align: justify;
+        }
+
+        .content {
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        .glass-card {
+            padding: 1.6rem 1.8rem;
+            border-radius: 22px;
+            background: rgba(17, 10, 32, 0.7);
+            border: 1px solid rgba(157, 78, 221, 0.18);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(14px);
+            color: #e7e3ff;
+        }
+
+        .glass-card strong {
+            color: #f8efff;
+        }
+
+        details {
+            background: rgba(23, 13, 44, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 1.35rem 1.6rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        details:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgba(123, 70, 201, 0.28);
+        }
+
+        summary {
+            font-size: 1.05rem;
+            color: #f8b0ff;
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+            position: relative;
+        }
+
+        summary::marker {
+            content: "▸";
+            color: #e28cff;
+            font-size: 1.1rem;
+            margin-right: 0.45rem;
+        }
+
+        .spoiler-content {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f0ecff;
+            line-height: 1.75;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #b89dff;
+            font-size: 0.95rem;
+            opacity: 0.86;
+            letter-spacing: 0.08em;
+        }
+
+        @media (max-width: 640px) {
+            .page {
+                padding: 1.4rem;
+            }
+
+            .hero {
+                padding: 1.2rem 1.3rem;
+            }
+
+            .crux-logo {
+                letter-spacing: 0.35rem;
+            }
+
+            .hero h2 {
+                font-size: 1.45rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="crux-logo">✦ CRUX ✦<span class="subtitle">南十字·终末星界秘所</span></header>
+
+        <section class="hero">
+            <h3>终末之世，天灾与深渊并行，畸变与诅咒笼罩大地。薪火将熄，方舟的航船在荒芜大地上迷失方向，古神的呓语腐蚀着每一个尚存理智的灵魂。</h3>
+            <p>这里是终末之世的隐秘结社，以 Crux 十字为圣徽，以五颗星轨为秘契，漫步于灾难与深渊之间。<strong>他们窥探古神的禁忌知识，却拒绝被混沌吞噬；他们触碰轮回的底层法则，却拒绝向宿命低头；他们于末世的黑暗中，收集着每一丝即将熄灭的余火，只为在终焉降临的那一刻，以十字为号，燃尽最后一丝光，对抗所有注定的终末。</strong></p>
+        </section>
+
+        <div class="content">
+            <div class="glass-card">
+                <strong>隐秘箴言</strong>
+                <p>终末不仅是终结，更是重塑。每一次黑暗的涌动，都是新纪元的次序在另一个层面上重生。</p>
+            </div>
+
+            <details>
+                <summary>点击查看深渊箴言</summary>
+                <div class="spoiler-content">当你凝视深渊的时候，深渊也在凝视着你。</div>
+            </details>
+        </div>
+
+        <div class="footer">终末星界秘所 · 以南十字为锚，向终末宣战</div>
+    </main>
+</body>
+</html>
