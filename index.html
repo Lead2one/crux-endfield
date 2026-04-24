@@ -92,7 +92,7 @@
 
         .content { 
             display: block; width: 100%; padding-top: 3rem; padding-bottom: 10vh;
-            background: linear-gradient(180deg, #07040e 0%, #040307 15%, #040307 100%);
+            background: linear-gradient(180deg, rgba(6,4,12,0.75) 0%, rgba(4,3,7,1) 15%, rgba(4,3,7,1) 100%);
         }
         
         .section-more { 
@@ -269,6 +269,8 @@
     </style>
 </head>
 <body>
+    <audio id="bgMusic" src="resources/main.mp3" loop preload="auto"></audio>
+
     <main class="page">
 
         <section class="hero" id="hero" aria-label="主题区">
@@ -468,10 +470,10 @@
                 const currentY = window.scrollY;
                 const heroHeight = heroEl.offsetHeight;
 
-                if(currentY > 80){
+                if(currentY > heroHeight - 50){
                     more.classList.add('visible');
                     hint.classList.remove('show');
-                } else {
+                } else if(currentY < heroHeight - 200) {
                     hint.classList.add('show');
                 }
 
@@ -678,6 +680,22 @@
                 renderCursor();
             }
         })();
+
+        // 背景音乐控制：在用户第一次交互后播放音乐
+        const bgMusic = document.getElementById('bgMusic');
+        let musicStarted = false;
+        function startMusic() {
+            if (bgMusic && !musicStarted) {
+                bgMusic.play().catch(e => console.log('音乐播放失败:', e));
+                musicStarted = true;
+                document.removeEventListener('click', startMusic);
+                document.removeEventListener('wheel', startMusic, { passive: true });
+                document.removeEventListener('touchstart', startMusic, { passive: true });
+            }
+        }
+        document.addEventListener('click', startMusic);
+        document.addEventListener('wheel', startMusic, { passive: true });
+        document.addEventListener('touchstart', startMusic, { passive: true });
     </script>
 </body>
 </html>
