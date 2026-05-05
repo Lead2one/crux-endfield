@@ -394,50 +394,51 @@
     <audio id="audioPlayer"></audio>
 
     <script>
+        const AUDIO_BASE = "https://pub-b9667cad2f06486ea4c99baea9493f16.r2.dev/musics/";
         const tracks = [
-            {
-                name: "海愿",
-                author: "塞壬唱片-MSR, Eagle Wei",
-                src: "./resources/musics/haiyuan.flac", 
-                durationStr: "2:20",
-                lore: "“我们在深空边缘捕捉到了这些频段。它不像是星体崩塌的噪音，更像是有某种巨大之物在虚空中喘息。切记，不要在深夜里把音量调到最大。” —— 秘所观测员笔记"
-            },
-            {
-                name: "See you soon",
-                author: "塞壬唱片-MSR, 柳川和樹",
-                src: "./resources/musics/seeyousoon.flac",
-                durationStr: "2:38",
-                lore: "旧日骑士们踏过被畸变侵蚀的荒原，他们的盔甲摩擦声在冷风中化作了这首绝望而悲壮的挽歌。星轨已然偏航，唯有火光不可熄灭。"
-            },
-            {
-                name: "Gwyn, Lord of Cinder",
-                author: "桜庭統",
-                src: "./resources/musics/Gwyn, Lord of Cinder.flac",
-                durationStr: "3:38",
-                lore: "“该频段呈现出稳定的低频燃烧噪声，间歇夹杂类似金属崩解的回响。起初我们认为那只是某种恒星余烬的残响，但在第七次回放时，噪声结构开始表现出规律性的‘回应’。记录员报告称，他在静音后仍能听见火焰。” —— 异常声源档案 #C-17"
-            },
-            {
-                name: "走过漫漫长路",
-                author: "塞壬唱片-MSR",
-                src: "./resources/musics/kal'tsit.flac",
-                durationStr: "2:10",
-                lore: "“音轨中存在异常稳定的心跳节律，与环境噪声完全解耦。更奇怪的是，它会在不同播放设备上产生细微偏移，仿佛在‘校准’听众本身。医疗组建议停止长时间监听，但仍有志愿者声称，这段旋律在某种程度上‘维持了他们的清醒’。”"
-            },
-            {
-                name: "Nameless Song",
-                author: "桜庭統",
-                src: "./resources/musics/Nameless Song.flac",
-                durationStr: "6:40",
-                lore: "“该样本无文件源头，无编码痕迹，甚至无法确认其首次出现的时间。它会在不同终端自发生成，并伴随轻微的信号污染。最令人不安的是，多名监听者在记录报告中写下了同一句话——‘这段旋律似乎早已存在于我的记忆中’。我们尚未找到解释。” —— 未命名声源归档"
-            },
-            {
-                name: "生命流",
-                author: "Starlight Oracle",
-                src: "./resources/musics/shengmingliu.flac",
-                durationStr: "4:11",
-                lore: "“该音轨结构呈现周期性循环，但不存在明确的起点或终点。频谱分析显示，其每一轮‘回归’都会携带微小偏差，如同某种不断修正自身的系统。长时间监听后，部分人员出现时间感错乱现象——他们无法判断自己是否已经听过这一段。”"
-            }
-        ];
+        {
+            name: "海愿",
+            author: "塞壬唱片-MSR, Eagle Wei",
+            src: AUDIO_BASE + "haiyuan.flac",
+            durationStr: "2:20",
+            lore: "“我们在深空边缘捕捉到了这些频段。它不像是星体崩塌的噪音，更像是有某种巨大之物在虚空中喘息。切记，不要在深夜里把音量调到最大。” —— 秘所观测员笔记"
+        },
+        {
+            name: "See you soon",
+            author: "塞壬唱片-MSR, 柳川和樹",
+            src: AUDIO_BASE + "seeyousoon.flac",
+            durationStr: "2:38",
+            lore: "旧日骑士们踏过被畸变侵蚀的荒原，他们的盔甲摩擦声在冷风中化作了这首绝望而悲壮的挽歌。星轨已然偏航，唯有火光不可熄灭。"
+        },
+        {
+            name: "Gwyn, Lord of Cinder",
+            author: "桜庭統",
+            src: AUDIO_BASE + "Gwyn, Lord of Cinder.mp3",
+            durationStr: "3:38",
+            lore: "“该频段呈现出稳定的低频燃烧噪声，间歇夹杂类似金属崩解的回响。起初我们认为那只是某种恒星余烬的残响，但在第七次回放时，噪声结构开始表现出规律性的‘回应’。记录员报告称，他在静音后仍能听见火焰。” —— 异常声源档案 #C-17"
+        },
+        {
+            name: "走过漫漫长路",
+            author: "塞壬唱片-MSR",
+            src: AUDIO_BASE + "kal'tsit.flac",
+            durationStr: "2:10",
+            lore: "“音轨中存在异常稳定的心跳节律，与环境噪声完全解耦。更奇怪的是，它会在不同播放设备上产生细微偏移，仿佛在‘校准’听众本身。医疗组建议停止长时间监听，但仍有志愿者声称，这段旋律在某种程度上‘维持了他们的清醒’。”"
+        },
+        {
+            name: "Nameless Song",
+            author: "桜庭統",
+            src: AUDIO_BASE + "Nameless Song.flac",
+            durationStr: "6:40",
+            lore: "“该样本无文件源头，无编码痕迹，甚至无法确认其首次出现的时间。它会在不同终端自发生成，并伴随轻微的信号污染。最令人不安的是，多名监听者在记录报告中写下了同一句话——‘这段旋律似乎早已存在于我的记忆中’。我们尚未找到解释。” —— 未命名声源归档"
+        },
+        {
+            name: "生命流",
+            author: "Starlight Oracle",
+            src: AUDIO_BASE + "shengmingliu.flac",
+            durationStr: "4:11",
+            lore: "“该音轨结构呈现周期性循环，但不存在明确的起点或终点。频谱分析显示，其每一轮‘回归’都会携带微小偏差，如同某种不断修正自身的系统。长时间监听后，部分人员出现时间感错乱现象——他们无法判断自己是否已经听过这一段。”"
+        }
+    ];
 
         let currentTrackIdx = 0;
         const audio = document.getElementById('audioPlayer');
