@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 融合系统状态栏颜色 -->
+    <meta name="theme-color" content="#040307">
     <title>南十字留声机 | 末世回响</title>
     <link rel="icon" type="image/png" href="南十字Crux.png">
     <link rel="apple-touch-icon" href="南十字Crux.png">
@@ -12,7 +14,7 @@
         
         @media (pointer: fine) { * { cursor: none !important; } }
 
-        html, body { height: 100vh; overscroll-behavior: none; }
+        html, body { height: 100vh; height: 100dvh; overscroll-behavior: none; }
         
         body {
             background: #040307;
@@ -22,6 +24,11 @@
             -moz-osx-font-smoothing: grayscale;
             overflow: hidden;
             display: flex; flex-direction: column;
+            position: relative;
+        }
+
+        button, .progress-bar-container, .track-item, a {
+            -webkit-tap-highlight-color: transparent;
         }
 
         body::before {
@@ -32,12 +39,11 @@
             pointer-events: none; z-index: -2;
         }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(168,107,255,0.3); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,121,198,0.6); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,121,198,0.7); }
 
-        /* 背景粒子层 */
         .particles { position:fixed; inset:0; pointer-events:none; z-index:-1; }
         .particle {
             position:absolute; width:4px; height:4px; border-radius:50%;
@@ -48,113 +54,86 @@
         }
         @keyframes floatAnim { 0% { transform: translate3d(0, 0, 0); opacity: 0.5; } 100% { transform: translate3d(10px, -15px, 0); opacity: 1; } }
 
+        /* ================= 舞台全局追光 (JS联动锁定星盘) ================= */
+        .stage-lighting {
+            position: fixed; 
+            top: -10vh; 
+            left: 50vw; /* 初始值，JS会瞬间接管并锁定星盘 */
+            transform: translateX(-50%);
+            width: min(1000px, 150vw); 
+            height: 110vh;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(255,217,251,0.35) 0%, rgba(255,217,251,0.15) 25%, rgba(168,107,255,0.1) 45%, transparent 70%),
+                radial-gradient(ellipse at 50% 20%, rgba(255,121,198,0.12) 0%, transparent 60%);
+            pointer-events: none; 
+            z-index: 0; 
+            mix-blend-mode: screen; 
+            filter: blur(25px); 
+            opacity: 0.4;
+            /* left属性加上平滑过渡，让窗口缩放时追光像探照灯一样滑过去 */
+            transition: left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease, filter 0.8s ease;
+            mask-image: linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%);
+        }
+        .stage-lighting.playing { opacity: 0.85; filter: blur(35px); animation: lightPulse 3s infinite alternate ease-in-out; }
+        .stage-lighting.pausing { opacity: 0; filter: blur(60px); animation: none; transition: opacity 0.6s ease, filter 0.6s ease; }
+        @keyframes lightPulse {
+            0% { opacity: 0.75; transform: translateX(-50%) scaleY(1); }
+            50% { opacity: 1; transform: translateX(-50%) scaleY(1.03); filter: blur(20px) brightness(1.2); }
+            100% { opacity: 0.85; transform: translateX(-50%) scaleY(1.01); }
+        }
+
         /* ================= 导航与顶栏 ================= */
         .top-nav {
-            padding: 1.5rem 2.4rem; display: flex; justify-content: space-between; align-items: center;
-            position: relative; z-index: 10;
+            padding: calc(1rem + env(safe-area-inset-top, 0px)) 2.4rem 1rem; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: relative; z-index: 20;
+            background: linear-gradient(180deg, rgba(4,3,7,0.85) 0%, rgba(4,3,7,0) 100%);
         }
         .back-btn {
             display: flex; align-items: center; gap: 8px; color: #ffd8fb; text-decoration: none;
             font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; opacity: 0.8;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
-        .back-btn:hover { opacity: 1; text-shadow: 0 0 12px rgba(255,121,198,0.6); transform: translateX(-4px); }
+        .back-btn:hover { opacity: 1; text-shadow: 0 0 12px rgba(255,121,198,0.8); transform: translateX(-4px); }
         .back-icon { font-size: 1.2rem; margin-bottom: 2px; }
 
-        .header-title { text-align: right; }
+        .header-title { text-align: right; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         .crux-word {
             font-family: "PingFang SC", 'Times New Roman', serif; font-weight: 600; font-size: 1.4rem; letter-spacing: 0.15em;
             color: transparent; background: linear-gradient(90deg,#fff1ff,#ffd9fb 40%, #a86bff 100%);
-            -webkit-background-clip: text; background-clip: text; text-shadow: 0 4px 16px rgba(168,107,255,0.2);
+            -webkit-background-clip: text; background-clip: text; text-shadow: 0 4px 16px rgba(168,107,255,0.4);
         }
-        .subtitle { display:block; font-size:0.8rem; color:#cdb9ff; opacity:0.7; letter-spacing:0.1em; margin-top: 4px; }
+        .subtitle { display:block; font-size:0.8rem; color:#cdb9ff; opacity:0.8; letter-spacing:0.1em; margin-top: 4px; }
 
         /* ================= 播放器主体布局 ================= */
         .player-main {
-            flex: 1; display: flex; align-items: center; justify-content: center;
+            flex: 1; display: flex; align-items: flex-start; justify-content: center;
             padding: 2rem 5%; gap: 4rem; max-width: 1400px; margin: 0 auto; width: 100%;
+            overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+            position: relative; z-index: 10;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 2%, black 98%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 2%, black 98%, transparent 100%);
         }
+        .player-main::-webkit-scrollbar { width: 0; }
 
-        /* --- 左侧：星盘与舞台追光 --- */
-        .visual-section {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; /* 为追光提供定位基准 */
-            z-index: 1;
-        }
+        .visual-section { flex: 1; display: flex; flex-direction: column; align-items: center; margin: auto 0; }
+        .info-section { flex: 1; max-width: 500px; display: flex; flex-direction: column; gap: 1.5rem; margin: auto 0; padding-bottom: 2rem; }
 
-        /* 新增：舞台追光特效 */
-        .stage-lighting {
-            position: absolute;
-            top: -30vh;
-            left: 50%;
-            transform: translateX(-50%);
-            width: min(900px, 140vw);
-            height: 90vh;
-
-            background:
-                radial-gradient(ellipse at 50% 0%,
-                    rgba(255,217,251,0.35) 0%,
-                    rgba(255,217,251,0.18) 25%,
-                    rgba(168,107,255,0.12) 45%,
-                    rgba(168,107,255,0.05) 60%,
-                    transparent 75%
-                ),
-                radial-gradient(ellipse at 50% 20%,
-                    rgba(255,121,198,0.12) 0%,
-                    transparent 70%
-                );
-
-            pointer-events: none;
-            z-index: 5;
-            mix-blend-mode: screen;
-
-            filter: blur(20px);
-            opacity: 0.5;
-
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            mask-image: linear-gradient(
-                to right,
-                transparent 0%,
-                black 20%,
-                black 80%,
-                transparent 100%
-            );
-        }
-
-        /* 播放时：光束亮起并开始律动 */
-        .visual-section.playing .stage-lighting {
-            opacity: 0.85;
-            filter: blur(50px);
-            animation: lightPulse 3s infinite alternate ease-in-out;
-        }
-
-        .visual-section.pausing .stage-lighting {
-            opacity: 0;
-            filter: blur(80px);
-            animation: none;
-            transition: opacity 0.6s ease, filter 0.6s ease;
-        }
-
-        @keyframes lightPulse {
-            0% { opacity: 0.8; transform: translateX(-50%) scaleY(1); }
-            50% { opacity: 1; transform: translateX(-50%) scaleY(1.02); filter: blur(15px) brightness(1.2); }
-            100% { opacity: 0.85; transform: translateX(-50%) scaleY(1.01); }
-        }
-
-        /* 星盘本体 */
+        /* --- 左侧：星盘 --- */
         .astrolabe-wrapper {
             position: relative; width: min(400px, 70vw); aspect-ratio: 1;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             background: rgba(10, 6, 20, 0.4); border: 1px solid rgba(168,107,255,0.15);
             box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 30px rgba(168,107,255,0.1);
         }
-        
-        /* 增加顶部高光反射，配合追光 */
+        /* 承接天光的高光反射层 */
         .astrolabe-wrapper::after {
             content: ''; position: absolute; inset: 0; border-radius: 50%;
-            background: linear-gradient(180deg, rgba(255,217,251,0.1) 0%, transparent 30%);
-            pointer-events: none; z-index: 10;
+            background: linear-gradient(180deg, rgba(255,217,251,0.25) 0%, transparent 40%);
+            pointer-events: none; z-index: 10; mix-blend-mode: screen; transition: opacity 0.5s ease; opacity: 0.3;
         }
+        .visual-section.playing .astrolabe-wrapper::after { opacity: 0.8; }
 
         .astrolabe-wrapper::before {
             content: ''; position: absolute; inset: -20px; border-radius: 50%;
@@ -167,11 +146,10 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.8);
             display: flex; align-items: center; justify-content: center;
             transition: transform 0.3s ease, opacity 0.5s ease, filter 0.5s ease;
-            opacity: 0.98;
-            animation: spin 12s linear infinite; animation-play-state: paused;
+            opacity: 0.98; animation: spin 12s linear infinite; animation-play-state: paused;
         }
-        .vinyl-disc.playing { animation-play-state: running; opacity: 1; filter: brightness(1.08); }
-        .vinyl-disc.pausing { opacity: 0.35; filter: brightness(0.75) blur(3px); }
+        .vinyl-disc.playing { animation-play-state: running; opacity: 1; filter: brightness(1.1); }
+        .vinyl-disc.pausing { opacity: 0.35; filter: brightness(0.7) blur(3px); }
         .vinyl-disc::after {
             content: ''; position: absolute; inset: 5%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.03);
             box-shadow: inset 0 0 0 10px rgba(0,0,0,0.1), inset 0 0 0 20px rgba(255,255,255,0.02), inset 0 0 0 40px rgba(0,0,0,0.1);
@@ -187,48 +165,56 @@
         @keyframes reverseSpin { 100% { transform: rotate(-360deg); } }
 
         /* --- 右侧：播放列表与残卷 --- */
-        .info-section {
-            flex: 1; max-width: 500px; display: flex; flex-direction: column; gap: 1.5rem; z-index: 10;
-        }
-        
         .glass-panel {
-            background: linear-gradient(145deg, rgba(22,14,42,0.6), rgba(10,6,20,0.8)); 
-            border: 1px solid rgba(168,107,255,0.15); border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); 
+            background: linear-gradient(145deg, rgba(22,14,42,0.45), rgba(10,6,20,0.7)); 
+            border: 1px solid rgba(168,107,255,0.15); border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: 1.5rem; display: flex; flex-direction: column;
         }
 
-        .panel-title { color: #ffd9fb; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+        .panel-title { color: #ffd9fb; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .panel-title::before { content: "✦"; color: #ff79c6; font-size: 0.9rem; }
 
-        .playlist { list-style: none; max-height: 160px; overflow-y: auto; padding-right: 8px; margin-bottom: 0.5rem; }
+        .playlist { list-style: none; max-height: 280px; overflow-y: auto; padding-right: 8px; margin-bottom: 0.5rem; }
+        
         .track-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 14px; border-radius: 12px; margin-bottom: 6px;
-            background: rgba(255,255,255,0.02); transition: all 0.3s ease; border: 1px solid transparent;
+            padding: 12px 14px; border-radius: 14px; margin-bottom: 6px;
+            background: rgba(255,255,255,0.02); transition: all 0.3s ease; border: 1px solid transparent; cursor: pointer;
         }
         .track-item:hover { background: rgba(168,107,255,0.1); border-color: rgba(168,107,255,0.2); }
-        .track-item.active { background: rgba(168,107,255,0.2); border-color: rgba(255,121,198,0.4); box-shadow: 0 0 15px rgba(168,107,255,0.1); }
+        .track-item.active { background: rgba(168,107,255,0.25); border-color: rgba(255,121,198,0.35); box-shadow: 0 0 15px rgba(168,107,255,0.15); }
+        
         .track-info { display: flex; flex-direction: column; gap: 4px; pointer-events: none;}
-        .track-name { color: #e6e2ff; font-weight: 600; font-size: 1rem; }
-        .track-item.active .track-name { color: #ff79c6; text-shadow: 0 0 8px rgba(255,121,198,0.4); }
+        .track-name { color: #e6e2ff; font-weight: 600; font-size: 1rem; transition: color 0.3s; }
+        
+        @keyframes activeTrackPulse {
+            0% { opacity: 0.9; text-shadow: 0 0 8px rgba(255,121,198,0.4); }
+            100% { opacity: 1; text-shadow: 0 0 15px rgba(255,121,198,0.8), 0 0 20px rgba(168,107,255,0.5); }
+        }
+        .track-item.active .track-name { color: #ffd9fb; animation: activeTrackPulse 2s infinite alternate ease-in-out; }
         .track-author { color: #b89dff; font-size: 0.8rem; opacity: 0.7; }
         .track-duration { color: #a86bff; font-size: 0.85rem; font-family: monospace; }
 
-        .lore-panel { max-height: 180px; }
+        .lore-panel { max-height: 220px; overflow: hidden; display: flex; flex-direction: column; }
         .lore-content {
             padding: 1rem; color: #e6e2ff; font-style: italic; line-height: 1.7;
             border-left: 2px solid #a86bff; background: rgba(0,0,0,0.3); border-radius: 0 8px 8px 0;
-            font-size: 0.95rem; height: 100%; overflow-y: auto; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            transition: opacity 0.4s ease;
+            font-size: 0.95rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translateY(0); flex: 1; overflow-y: auto;
         }
+        .lore-content.fade-out { opacity: 0; transform: translateY(8px); }
 
-        /* ================= 底部控制栏 ================= */
+        /* ================= 底部沉浸式控制栏 ================= */
         .bottom-controls {
-            padding: 1rem 5% 3rem; width: 100%; display: flex; flex-direction: column; align-items: center;
-            background: linear-gradient(0deg, rgba(4,3,7,1) 0%, rgba(10,6,20,0.8) 100%);
-            border-top: 1px solid rgba(168,107,255,0.1); z-index: 10; position: relative;
+            padding: 1.2rem 5% calc(1.5rem + env(safe-area-inset-bottom, 0px)); width: 100%; 
+            display: flex; flex-direction: column; align-items: center;
+            background: rgba(8, 5, 14, 0.75);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(168,107,255,0.2); z-index: 20; position: relative;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
         }
 
         .progress-wrapper {
@@ -236,15 +222,15 @@
         }
         .time { font-family: monospace; font-size: 0.85rem; color: #d7d0ff; opacity: 0.8; width: 45px; text-align: center; }
         .progress-bar-container {
-            flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; position: relative;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); overflow: hidden; transition: height 0.2s;
-            touch-action: pan-y; cursor: pointer;
+            flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.6); overflow: hidden; transition: height 0.2s;
+            touch-action: none; cursor: pointer;
         }
-        .progress-bar-container:hover { height: 8px; background: rgba(255,255,255,0.12); }
+        .progress-bar-container:hover { height: 8px; background: rgba(255,255,255,0.15); }
         .progress-fill {
-            height: 100%; width: 0%; border-radius: 3px;
+            height: 100%; width: 0%; border-radius: 4px;
             background: linear-gradient(90deg, #5c358f, #ff79c6);
-            box-shadow: 0 0 10px rgba(255,121,198,0.6); position: relative; pointer-events: none;
+            box-shadow: 0 0 12px rgba(255,121,198,0.7); position: relative; pointer-events: none;
         }
 
         .btn-group { display: flex; align-items: center; gap: 24px; }
@@ -266,42 +252,39 @@
         .btn-play svg { width: 28px; height: 28px; fill: currentColor; margin-left: 4px; }
         .btn-play.playing svg { margin-left: 0; }
 
-        /* ================= 响应式适配增强 ================= */
+        /* ================= 移动端响应式核心优化 ================= */
 
         @media (max-width: 1024px) {
-            .player-main { gap: 2.5rem; padding: 1.5rem 5%; }
-            .astrolabe-wrapper { width: min(350px, 60vw); }
-            .info-section { max-width: 450px; }
-            .glass-panel { padding: 1.25rem; }
+            .player-main { gap: 2.5rem; padding: 1rem 4% 2rem; }
+            .astrolabe-wrapper { width: min(340px, 45vw); }
+            .info-section { max-width: 50%; }
         }
 
         @media (max-width: 768px) {
-            .top-nav { padding: 1.2rem 1.5rem; }
-            .crux-word { font-size: 1.2rem; }
-            .player-main { flex-direction: column; gap: 2rem; padding: 1rem 5%; }
-            .visual-section { order: 1; }
-            .info-section { order: 2; width: 100%; max-width: 100%; }
-            .astrolabe-wrapper { width: min(300px, 70vw); }
-            .stage-lighting { width: 140vw; top: -10vh; } /* 移动端调整光束比例 */
-            .playlist { max-height: 140px; }
-            .lore-panel { max-height: 150px; }
+            .top-nav { padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 0.5rem; }
+            .player-main { flex-direction: column; gap: 2rem; padding: 1rem 5% 6rem; }
+            .visual-section { order: 1; width: 100%; margin-top: 1rem; flex-shrink: 0; }
+            .info-section { order: 2; width: 100%; max-width: 100%; flex-shrink: 0; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 0; }
+            .astrolabe-wrapper { width: min(320px, 65vw); }
+            .playlist { max-height: none; overflow: visible; margin-bottom: 0; }
+            .lore-panel { max-height: none; overflow: visible; }
+            .lore-content { max-height: none; overflow: visible; }
         }
 
         @media (max-width: 520px) {
-            .top-nav { padding: 1rem 1.2rem; }
+            .top-nav { padding: calc(0.8rem + env(safe-area-inset-top, 0px)) 1.2rem 0.5rem; }
             .back-btn { font-size: 0.85rem; }
-            .crux-word { font-size: 1.1rem; letter-spacing: 0.1em; }
-            .subtitle { font-size: 0.7rem; }
-            .player-main { padding: 0.5rem 4% 1.5rem; gap: 1.5rem; }
-            .astrolabe-wrapper { width: min(240px, 75vw); }
+            .crux-word { font-size: 1.15rem; letter-spacing: 0.1em; }
+            .player-main { padding: 0.5rem 5% 3rem; gap: 1.8rem; }
+            .astrolabe-wrapper { width: min(260px, 75vw); }
             .disc-center::before { font-size: 1.2rem; }
-            .glass-panel { padding: 1rem; border-radius: 16px; }
+            .glass-panel { padding: 1.2rem; border-radius: 20px; }
             .panel-title { font-size: 1rem; margin-bottom: 0.8rem; }
-            .track-item { padding: 8px 10px; }
+            .track-item { padding: 12px 14px; border-radius: 12px; }
             .track-name { font-size: 0.95rem; }
             .track-author { font-size: 0.75rem; }
             .lore-content { font-size: 0.9rem; padding: 0.8rem; }
-            .bottom-controls { padding: 1rem 4% 2.5rem; }
+            .bottom-controls { padding: 1.2rem 5% calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
             .progress-wrapper { margin-bottom: 1.2rem; }
             .btn-group { gap: 20px; }
             .btn-play { width: 60px; height: 60px; }
@@ -309,24 +292,25 @@
         }
 
         @media (max-width: 375px) {
-            .astrolabe-wrapper { width: 200px; }
-            .top-nav { padding: 0.8rem 1rem; }
-            .crux-word { font-size: 1rem; }
-            .btn-play { width: 56px; height: 56px; }
+            .astrolabe-wrapper { width: 220px; }
+            .btn-play { width: 54px; height: 54px; }
             .btn-side { width: 40px; height: 40px; }
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
-            .player-main { flex-direction: row; padding: 1rem 5%; }
-            .astrolabe-wrapper { width: 40vh; }
-            .stage-lighting { height: 120vh; top: -50vh; }
-            .top-nav, .bottom-controls { padding: 0.5rem 5% 1rem; }
-            .playlist { max-height: 100px; }
-            .lore-panel { display: none; }
+            .player-main { flex-direction: row; padding: 0.5rem 5% 1rem; align-items: center; gap: 2rem; }
+            .astrolabe-wrapper { width: 45vh; }
+            .top-nav { padding: env(safe-area-inset-top, 0.5rem) 5% 0.5rem; }
+            .bottom-controls { padding: 0.8rem 5% calc(0.8rem + env(safe-area-inset-bottom, 0px)); }
+            .playlist { max-height: 160px; overflow-y: auto; }
+            .lore-panel { display: none; } 
         }
     </style>
 </head>
 <body>
+
+    <!-- 舞台追光，依靠 JS 动态计算锁定星盘位置 -->
+    <div class="stage-lighting" id="stageLighting"></div>
 
     <div class="particles" id="particles"></div>
 
@@ -341,11 +325,8 @@
     </nav>
 
     <main class="player-main">
-        <!-- 加入了 id="visualSection" 方便 JS 联动 -->
         <section class="visual-section" id="visualSection">
-            <div class="stage-lighting"></div> <!-- 新增的舞台追光 -->
-            
-            <div class="astrolabe-wrapper">
+            <div class="astrolabe-wrapper" id="astrolabe">
                 <div class="vinyl-disc" id="vinyl">
                     <div class="disc-center"></div>
                 </div>
@@ -355,8 +336,7 @@
         <section class="info-section">
             <div class="glass-panel">
                 <div class="panel-title">星轨残片 · 收录曲目</div>
-                <ul class="playlist" id="playlist">
-                </ul>
+                <ul class="playlist" id="playlist"></ul>
             </div>
 
             <div class="glass-panel lore-panel">
@@ -396,49 +376,13 @@
     <script>
         const AUDIO_BASE = "https://pub-b9667cad2f06486ea4c99baea9493f16.r2.dev/musics/";
         const tracks = [
-        {
-            name: "海愿",
-            author: "塞壬唱片-MSR, Eagle Wei",
-            src: AUDIO_BASE + "haiyuan.flac",
-            durationStr: "2:20",
-            lore: "“我们在深空边缘捕捉到了这些频段。它不像是星体崩塌的噪音，更像是有某种巨大之物在虚空中喘息。切记，不要在深夜里把音量调到最大。” —— 秘所观测员笔记"
-        },
-        {
-            name: "See you soon",
-            author: "塞壬唱片-MSR, 柳川和樹",
-            src: AUDIO_BASE + "seeyousoon.flac",
-            durationStr: "2:38",
-            lore: "旧日骑士们踏过被畸变侵蚀的荒原，他们的盔甲摩擦声在冷风中化作了这首绝望而悲壮的挽歌。星轨已然偏航，唯有火光不可熄灭。"
-        },
-        {
-            name: "Gwyn, Lord of Cinder",
-            author: "桜庭統",
-            src: AUDIO_BASE + "Gwyn, Lord of Cinder.mp3",
-            durationStr: "3:38",
-            lore: "“该频段呈现出稳定的低频燃烧噪声，间歇夹杂类似金属崩解的回响。起初我们认为那只是某种恒星余烬的残响，但在第七次回放时，噪声结构开始表现出规律性的‘回应’。记录员报告称，他在静音后仍能听见火焰。” —— 异常声源档案 #C-17"
-        },
-        {
-            name: "走过漫漫长路",
-            author: "塞壬唱片-MSR",
-            src: AUDIO_BASE + "kal'tsit.flac",
-            durationStr: "2:10",
-            lore: "“音轨中存在异常稳定的心跳节律，与环境噪声完全解耦。更奇怪的是，它会在不同播放设备上产生细微偏移，仿佛在‘校准’听众本身。医疗组建议停止长时间监听，但仍有志愿者声称，这段旋律在某种程度上‘维持了他们的清醒’。”"
-        },
-        {
-            name: "Nameless Song",
-            author: "桜庭統",
-            src: AUDIO_BASE + "Nameless Song.flac",
-            durationStr: "6:40",
-            lore: "“该样本无文件源头，无编码痕迹，甚至无法确认其首次出现的时间。它会在不同终端自发生成，并伴随轻微的信号污染。最令人不安的是，多名监听者在记录报告中写下了同一句话——‘这段旋律似乎早已存在于我的记忆中’。我们尚未找到解释。” —— 未命名声源归档"
-        },
-        {
-            name: "生命流",
-            author: "Starlight Oracle",
-            src: AUDIO_BASE + "shengmingliu.flac",
-            durationStr: "4:11",
-            lore: "“该音轨结构呈现周期性循环，但不存在明确的起点或终点。频谱分析显示，其每一轮‘回归’都会携带微小偏差，如同某种不断修正自身的系统。长时间监听后，部分人员出现时间感错乱现象——他们无法判断自己是否已经听过这一段。”"
-        }
-    ];
+            { name: "海愿", author: "塞壬唱片-MSR, Eagle Wei", src: AUDIO_BASE + "haiyuan.flac", durationStr: "2:20", lore: "“我们在深空边缘捕捉到了这些频段。它不像是星体崩塌的噪音，更像是有某种巨大之物在虚空中喘息。切记，不要在深夜里把音量调到最大。”" },
+            { name: "See you soon", author: "塞壬唱片-MSR, 柳川和樹", src: AUDIO_BASE + "seeyousoon.flac", durationStr: "2:38", lore: "旧日骑士们踏过被畸变侵蚀的荒原，他们的盔甲摩擦声在冷风中化作了这首绝望而悲壮的挽歌。星轨已然偏航，唯有火光不可熄灭。" },
+            { name: "Gwyn, Lord of Cinder", author: "桜庭統", src: AUDIO_BASE + "Gwyn, Lord of Cinder.mp3", durationStr: "3:38", lore: "“该频段呈现出稳定的低频燃烧噪声...记录员报告称，他在静音后仍能听见火焰。”" },
+            { name: "走过漫漫长路", author: "塞壬唱片-MSR", src: AUDIO_BASE + "kal'tsit.flac", durationStr: "2:10", lore: "“音轨中存在异常稳定的心跳节律，与环境噪声完全解耦。医疗组建议停止长时间监听，但仍有志愿者声称，这段旋律在某种程度上‘维持了他们的清醒’。”" },
+            { name: "Nameless Song", author: "桜庭統", src: AUDIO_BASE + "Nameless Song.flac", durationStr: "6:40", lore: "“该样本无文件源头，无编码痕迹...最令人不安的是，多名监听者在记录报告中写下了同一句话——‘这段旋律似乎早已存在于我的记忆中’。”" },
+            { name: "生命流", author: "Starlight Oracle", src: AUDIO_BASE + "shengmingliu.flac", durationStr: "4:11", lore: "“长时间监听后，部分人员出现时间感错乱现象——他们无法判断自己是否已经听过这一段。”" }
+        ];
 
         let currentTrackIdx = 0;
         const audio = document.getElementById('audioPlayer');
@@ -452,16 +396,32 @@
         const currentTimeEl = document.getElementById('currentTime');
         const totalTimeEl = document.getElementById('totalTime');
         const vinyl = document.getElementById('vinyl');
-        const visualSection = document.getElementById('visualSection'); // 获取左侧容器用于光线联动
+        const visualSection = document.getElementById('visualSection');
+        const stageLighting = document.getElementById('stageLighting'); 
+        const astrolabe = document.getElementById('astrolabe'); // 用于追踪的核心目标
         const playlistEl = document.getElementById('playlist');
         const loreContent = document.getElementById('loreContent');
+
+        // ================= 核心：让追光动态锁定星盘中心 =================
+        function syncLightingPosition() {
+            if (!astrolabe || !stageLighting) return;
+            const rect = astrolabe.getBoundingClientRect();
+            // 计算星盘在当前屏幕视口中的横向中心点
+            const centerX = rect.left + (rect.width / 2);
+            stageLighting.style.left = `${centerX}px`;
+        }
+
+        // 初始化和窗口大小改变时，重新瞄准星盘
+        window.addEventListener('resize', syncLightingPosition);
+        // 初始化延时调用，确保DOM渲染完毕
+        setTimeout(syncLightingPosition, 50);
+        setTimeout(syncLightingPosition, 300);
 
         function initPlaylist() {
             playlistEl.innerHTML = '';
             tracks.forEach((track, index) => {
                 const li = document.createElement('li');
                 li.className = `track-item ${index === currentTrackIdx ? 'active' : ''}`;
-                li.dataset.index = index;
                 li.innerHTML = `
                     <div class="track-info">
                         <span class="track-name">${track.name}</span>
@@ -470,8 +430,10 @@
                     <span class="track-duration">${track.durationStr}</span>
                 `;
                 li.addEventListener('click', () => {
-                    loadTrack(index);
-                    playTrack();
+                    if(currentTrackIdx !== index) {
+                        loadTrack(index);
+                        playTrack();
+                    }
                 });
                 playlistEl.appendChild(li);
             });
@@ -484,18 +446,14 @@
             audio.src = track.src;
             audio.load(); 
             
-            audio.onerror = () => {
-                loreContent.innerHTML += `<br><br><span style="color:#ff4d4d;">[系统警告] 音频流断开，未能解析该残卷。请检查本地资源路径是否正确：${track.src}</span>`;
-            };
-
             document.querySelectorAll('.track-item').forEach((item, i) => {
                 item.classList.toggle('active', i === index);
             });
             
-            loreContent.style.opacity = 0;
+            loreContent.classList.add('fade-out');
             setTimeout(() => {
                 loreContent.innerHTML = track.lore;
-                loreContent.style.opacity = 1;
+                loreContent.classList.remove('fade-out');
             }, 300);
 
             progressFill.style.width = '0%';
@@ -504,202 +462,108 @@
         }
 
         function playTrack() {
+            syncLightingPosition(); // 每次点击播放时，确保光追准了
             playBtn.classList.add('playing');
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'block';
-            vinyl.classList.remove('pausing');
-            visualSection.classList.remove('pausing');
-            vinyl.classList.add('playing');
-            visualSection.classList.add('playing'); // 播放时激活追光律动
-
-            audio.play().catch(e => {
-                console.log("请点击页面任意位置授权音频播放:", e);
-            });
+            playIcon.style.display = 'none'; pauseIcon.style.display = 'block';
+            vinyl.classList.remove('pausing'); stageLighting.classList.remove('pausing'); visualSection.classList.remove('pausing');
+            vinyl.classList.add('playing'); stageLighting.classList.add('playing'); visualSection.classList.add('playing');
+            audio.play().catch(e => console.log("等待授权:", e));
         }
 
         function pauseTrack() {
             audio.pause();
             playBtn.classList.remove('playing');
-            playIcon.style.display = 'block';
-            pauseIcon.style.display = 'none';
-            vinyl.classList.add('pausing');
-            visualSection.classList.add('pausing');
+            playIcon.style.display = 'block'; pauseIcon.style.display = 'none';
+            vinyl.classList.add('pausing'); stageLighting.classList.add('pausing'); visualSection.classList.add('pausing');
             setTimeout(() => {
                 vinyl.classList.remove('playing', 'pausing');
+                stageLighting.classList.remove('playing', 'pausing');
                 visualSection.classList.remove('playing', 'pausing');
             }, 600);
         }
 
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) playTrack();
-            else pauseTrack();
-        });
-
-        prevBtn.addEventListener('click', () => {
-            let newIdx = currentTrackIdx - 1;
-            if (newIdx < 0) newIdx = tracks.length - 1;
-            loadTrack(newIdx);
-            playTrack();
-        });
-
-        nextBtn.addEventListener('click', () => {
-            let newIdx = currentTrackIdx + 1;
-            if (newIdx >= tracks.length) newIdx = 0;
-            loadTrack(newIdx);
-            playTrack();
-        });
-
-        audio.addEventListener('ended', () => {
-            nextBtn.click();
-        });
+        playBtn.addEventListener('click', () => audio.paused ? playTrack() : pauseTrack());
+        prevBtn.addEventListener('click', () => { loadTrack(currentTrackIdx - 1 < 0 ? tracks.length - 1 : currentTrackIdx - 1); playTrack(); });
+        nextBtn.addEventListener('click', () => { loadTrack(currentTrackIdx + 1 >= tracks.length ? 0 : currentTrackIdx + 1); playTrack(); });
+        audio.addEventListener('ended', () => nextBtn.click());
 
         function formatTime(seconds) {
             if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${s < 10 ? '0' : ''}${s}`;
+            return `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`;
         }
 
-        audio.addEventListener('loadedmetadata', () => {
-            if (audio.duration && isFinite(audio.duration)) {
-                totalTimeEl.textContent = formatTime(audio.duration);
-            }
-        });
-
+        audio.addEventListener('loadedmetadata', () => { if (audio.duration && isFinite(audio.duration)) totalTimeEl.textContent = formatTime(audio.duration); });
         audio.addEventListener('timeupdate', () => {
-            const current = audio.currentTime;
-            const total = audio.duration;
-            if (total && isFinite(total)) {
-                const percent = (current / total) * 100;
-                progressFill.style.width = `${percent}%`;
-                currentTimeEl.textContent = formatTime(current);
+            if (audio.duration && isFinite(audio.duration)) {
+                progressFill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
             }
         });
 
         let isSeeking = false;
         function seekToPosition(clientX) {
             const rect = progressBar.getBoundingClientRect();
-            const pos = (clientX - rect.left) / rect.width;
             if (audio.duration && isFinite(audio.duration)) {
-                audio.currentTime = Math.min(Math.max(pos, 0), 1) * audio.duration;
+                audio.currentTime = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1) * audio.duration;
             }
         }
-
-        progressBar.addEventListener('click', (e) => {
-            seekToPosition(e.clientX);
-        });
-
-        progressBar.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            isSeeking = true;
-            progressBar.setPointerCapture(e.pointerId);
-            seekToPosition(e.clientX);
-        });
-
-        progressBar.addEventListener('pointermove', (e) => {
-            if (!isSeeking) return;
-            seekToPosition(e.clientX);
-        });
-
-        progressBar.addEventListener('pointerup', (e) => {
-            if (!isSeeking) return;
-            isSeeking = false;
-            progressBar.releasePointerCapture(e.pointerId);
-            seekToPosition(e.clientX);
-        });
-
-        progressBar.addEventListener('pointercancel', () => {
-            isSeeking = false;
-        });
-
-        document.addEventListener('pointerup', () => {
-            isSeeking = false;
-        });
-
+        progressBar.addEventListener('pointerdown', (e) => { e.preventDefault(); isSeeking = true; progressBar.setPointerCapture(e.pointerId); seekToPosition(e.clientX); });
+        progressBar.addEventListener('pointermove', (e) => { if (isSeeking) seekToPosition(e.clientX); });
+        progressBar.addEventListener('pointerup', (e) => { if (isSeeking) { isSeeking = false; progressBar.releasePointerCapture(e.pointerId); seekToPosition(e.clientX); }});
+        progressBar.addEventListener('pointercancel', () => isSeeking = false);
+        
         (function initVisuals() {
             const particlesWrap = document.getElementById('particles');
             for(let i=0; i<20; i++){
-                const p = document.createElement('div'); 
-                p.className = 'particle';
-                p.style.left = Math.random()*100 + '%'; 
-                p.style.top = Math.random()*100 + '%';
-                const s = 3 + Math.random()*5; 
-                p.style.width = s+'px'; p.style.height = s+'px';
-                p.style.animationDuration = (5000 + Math.random()*8000) + 'ms';
-                p.style.animationDelay = (Math.random()*3000) + 'ms';
+                const p = document.createElement('div'); p.className = 'particle';
+                p.style.left = Math.random()*100 + '%'; p.style.top = Math.random()*100 + '%';
+                const s = 3 + Math.random()*5; p.style.width = s+'px'; p.style.height = s+'px';
+                p.style.animationDuration = (5000 + Math.random()*8000) + 'ms'; p.style.animationDelay = (Math.random()*3000) + 'ms';
                 particlesWrap.appendChild(p);
             }
 
-            const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-            if(!isTouch) {
+            if(!(('ontouchstart' in window) || navigator.maxTouchPoints > 0)) {
                 const cvs = document.createElement('canvas');
                 cvs.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
                 document.body.appendChild(cvs);
                 const ctx = cvs.getContext('2d');
-                let w = window.innerWidth, h = window.innerHeight;
-                cvs.width = w; cvs.height = h;
-
-                window.addEventListener('resize', () => { w = window.innerWidth; h = window.innerHeight; cvs.width = w; cvs.height = h; });
-
-                const mouse = { x: w/2, y: h/2, tx: w/2, ty: h/2 };
-                let history = [];
-                let hoverState = false;
-                let clickScale = 1;
-                let starRotation = 0; 
-
-                window.addEventListener('mousemove', e => { mouse.tx = e.clientX; mouse.ty = e.clientY; });
-
-                document.addEventListener('mouseover', e => {
-                    if(e.target.closest('button') || e.target.closest('a') || e.target.closest('.track-item') || e.target.closest('#progressBar')) {
-                        hoverState = true;
-                    } else { hoverState = false; }
+                let w = window.innerWidth, h = window.innerHeight; cvs.width = w; cvs.height = h;
+                
+                window.addEventListener('resize', () => { 
+                    w = window.innerWidth; h = window.innerHeight; cvs.width = w; cvs.height = h; 
                 });
 
+                const mouse = { x: w/2, y: h/2, tx: w/2, ty: h/2 }; let history = [], hoverState = false, clickScale = 1, starRotation = 0; 
+                window.addEventListener('mousemove', e => { mouse.tx = e.clientX; mouse.ty = e.clientY; });
+                document.addEventListener('mouseover', e => { hoverState = !!(e.target.closest('button') || e.target.closest('a') || e.target.closest('.track-item') || e.target.closest('#progressBar')); });
                 document.addEventListener('mousedown', () => clickScale = 0.6);
                 document.addEventListener('mouseup', () => { clickScale = 1.3; setTimeout(() => clickScale = 1, 150); });
-
-                function drawStar(cx, cy, outer, inner, color, glow, rotOffset) {
-                    let rot = (Math.PI / 2 * 3) + rotOffset;
-                    let step = Math.PI / 4; 
-                    ctx.beginPath();
-                    ctx.moveTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer);
-                    for (let i = 0; i < 4; i++) {
-                        ctx.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer); rot += step;
-                        ctx.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner); rot += step;
-                    }
-                    ctx.closePath();
-                    if(glow) { ctx.shadowBlur = 15; ctx.shadowColor = glow; } else { ctx.shadowBlur = 0; }
-                    ctx.fillStyle = color; ctx.fill(); ctx.shadowBlur = 0;
-                }
 
                 function renderCursor() {
                     ctx.clearRect(0, 0, w, h);
                     mouse.x += (mouse.tx - mouse.x) * 0.45; mouse.y += (mouse.ty - mouse.y) * 0.45;
-                    history.push({x: mouse.x, y: mouse.y});
-                    if(history.length > 12) history.shift();
-
+                    history.push({x: mouse.x, y: mouse.y}); if(history.length > 12) history.shift();
+                    
                     if (history.length > 2) {
-                        ctx.beginPath();
-                        ctx.moveTo(history[0].x, history[0].y);
-                        for (let i = 1; i < history.length - 1; i++) {
-                            const xc = (history[i].x + history[i + 1].x) / 2;
-                            const yc = (history[i].y + history[i + 1].y) / 2;
-                            ctx.quadraticCurveTo(history[i].x, history[i].y, xc, yc);
-                        }
+                        ctx.beginPath(); ctx.moveTo(history[0].x, history[0].y);
+                        for (let i = 1; i < history.length - 1; i++) ctx.quadraticCurveTo(history[i].x, history[i].y, (history[i].x + history[i+1].x)/2, (history[i].y + history[i+1].y)/2);
                         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
                         const grad = ctx.createLinearGradient(history[0].x, history[0].y, mouse.x, mouse.y);
-                        grad.addColorStop(0, 'rgba(168, 107, 255, 0)');
-                        grad.addColorStop(1, 'rgba(255, 121, 198, 0.7)');
+                        grad.addColorStop(0, 'rgba(168, 107, 255, 0)'); grad.addColorStop(1, 'rgba(255, 121, 198, 0.7)');
                         ctx.strokeStyle = grad; ctx.lineWidth = hoverState ? 3 : 1.5; ctx.stroke();
                     }
 
                     starRotation += hoverState ? 0.04 : 0.005;
-                    let targetOuter = (hoverState ? 18 : 12) * clickScale;
-                    let targetInner = (hoverState ? 6 : 3) * clickScale;
-
-                    drawStar(mouse.x, mouse.y, targetOuter + 4, targetInner + 2, 'rgba(168, 107, 255, 0.3)', 'rgba(255, 121, 198, 0.5)', starRotation);
-                    drawStar(mouse.x, mouse.y, targetOuter, targetInner, '#ffffff', '#ff79c6', starRotation);
-
+                    let to = (hoverState ? 18 : 12) * clickScale, ti = (hoverState ? 6 : 3) * clickScale;
+                    
+                    const drawS = (o, i, c, g, r) => {
+                        ctx.beginPath(); let rot = (Math.PI / 2 * 3) + r, step = Math.PI / 4; 
+                        ctx.moveTo(mouse.x + Math.cos(rot)*o, mouse.y + Math.sin(rot)*o);
+                        for(let k=0; k<4; k++) { ctx.lineTo(mouse.x + Math.cos(rot)*o, mouse.y + Math.sin(rot)*o); rot += step; ctx.lineTo(mouse.x + Math.cos(rot)*i, mouse.y + Math.sin(rot)*i); rot += step; }
+                        ctx.closePath(); if(g) { ctx.shadowBlur = 15; ctx.shadowColor = g; } else ctx.shadowBlur = 0; ctx.fillStyle = c; ctx.fill(); ctx.shadowBlur = 0;
+                    };
+                    drawS(to + 4, ti + 2, 'rgba(168, 107, 255, 0.3)', 'rgba(255, 121, 198, 0.5)', starRotation);
+                    drawS(to, ti, '#ffffff', '#ff79c6', starRotation);
                     requestAnimationFrame(renderCursor);
                 }
                 renderCursor();
